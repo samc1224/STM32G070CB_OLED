@@ -39,7 +39,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c2;
 
 /* USER CODE BEGIN PV */
 
@@ -49,12 +50,185 @@
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_I2C2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+// Encoder Pin: Ec22=PD0, Ec21=PD1, Ec12=PD2, Ec11=PD3
+uint8_t cntLED = 0;
+uint8_t isEc22Rise = 0;
+uint8_t isEc21Rise = 0;
+uint8_t isEc22Fall = 0;
+uint8_t isEc21Fall = 0;
+void HAL_GPIO_EXTI_Rising_Callback(uint16_t pinEc)
+{
+    switch(pinEc)
+    {
+    	case EC22_EXTI0_Pin:
+    		if(!HAL_GPIO_ReadPin(EC21_EXTI1_GPIO_Port, EC21_EXTI1_Pin))
+    		{
+    			if(!isEc22Rise && isEc22Fall)
+    			{
+    				if(cntLED == 1)
+    				{
+        				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET); //LED3
+    				}
+    				else if(cntLED == 2)
+    				{
+        				HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET); //LED4
+    				}
+    				else if(cntLED == 3)
+    				{
+        				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET); //LED5
+    				}
+    				else if(cntLED == 4)
+    				{
+        				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET); //LED2
+    				}
+    				else if(cntLED == 5)
+    				{
+        				HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET); //LED1
+    				}
+
+    				cntLED++;
+    				if(cntLED > 5)
+    				{
+    					cntLED = 5;
+    				}
+    			}
+    			isEc22Rise = 1;
+    			isEc22Fall = 0;
+    		}
+    		break;
+    	case EC21_EXTI1_Pin:
+    		if(!HAL_GPIO_ReadPin(EC22_EXTI0_GPIO_Port, EC22_EXTI0_Pin))
+    		{
+    			if(!isEc21Rise && isEc21Fall)
+    			{
+    				if(cntLED == 1)
+    				{
+        				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+    				}
+    				else if(cntLED == 2)
+    				{
+        				HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
+    				}
+    				else if(cntLED == 3)
+    				{
+        				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+    				}
+    				else if(cntLED == 4)
+    				{
+        				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+    				}
+    				else if(cntLED == 5)
+    				{
+        				HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+    				}
+
+    				cntLED--;
+    				if(cntLED < 1)
+    				{
+        				cntLED = 1;
+    				}
+    			}
+    			isEc21Rise = 1;
+    			isEc21Fall = 0;
+    		}
+    		break;
+    	case EC12_EXTI2_Pin:
+    		break;
+    	case EC11_EXTI3_Pin:
+    		break;
+    }
+}
+
+void HAL_GPIO_EXTI_Falling_Callback(uint16_t pinEc)
+{
+    switch(pinEc)
+    {
+    	case EC22_EXTI0_Pin:
+    		if(HAL_GPIO_ReadPin(EC21_EXTI1_GPIO_Port, EC21_EXTI1_Pin))
+    		{
+    			if(!isEc22Fall && isEc22Rise)
+    			{
+    				if(cntLED == 1)
+    				{
+        				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+    				}
+    				else if(cntLED == 2)
+    				{
+        				HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
+    				}
+    				else if(cntLED == 3)
+    				{
+        				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET);
+    				}
+    				else if(cntLED == 4)
+    				{
+        				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+    				}
+    				else if(cntLED == 5)
+    				{
+        				HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+    				}
+
+    				cntLED++;
+    				if(cntLED > 5)
+    				{
+    					cntLED = 5;
+    				}
+    			}
+    			isEc22Fall = 1;
+    			isEc22Rise = 0;
+    		}
+    		break;
+    	case EC21_EXTI1_Pin:
+    		if(HAL_GPIO_ReadPin(EC22_EXTI0_GPIO_Port, EC22_EXTI0_Pin))
+    		{
+    			if(!isEc21Fall && isEc21Rise)
+    			{
+    				if(cntLED == 1)
+    				{
+        				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+    				}
+    				else if(cntLED == 2)
+    				{
+        				HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
+    				}
+    				else if(cntLED == 3)
+    				{
+        				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+    				}
+    				else if(cntLED == 4)
+    				{
+        				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+    				}
+    				else if(cntLED == 5)
+    				{
+        				HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+    				}
+
+    				cntLED--;
+    				if(cntLED < 1)
+    				{
+        				cntLED = 1;
+    				}
+    			}
+    			isEc21Fall = 1;
+    			isEc21Rise = 0;
+    		}
+    		break;
+    	case EC12_EXTI2_Pin:
+    		break;
+    	case EC11_EXTI3_Pin:
+    		break;
+    }
+}
 
 /* USER CODE END 0 */
 
@@ -87,6 +261,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
   AppInit();
   /* USER CODE END 2 */
@@ -192,6 +367,54 @@ static void MX_I2C1_Init(void)
 }
 
 /**
+  * @brief I2C2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C2_Init(void)
+{
+
+  /* USER CODE BEGIN I2C2_Init 0 */
+
+  /* USER CODE END I2C2_Init 0 */
+
+  /* USER CODE BEGIN I2C2_Init 1 */
+
+  /* USER CODE END I2C2_Init 1 */
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.Timing = 0x00303D5B;
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C2_Init 2 */
+
+  /* USER CODE END I2C2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -204,6 +427,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, LD3_Pin|LD4_Pin|LD5_Pin, GPIO_PIN_RESET);
@@ -238,6 +462,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : EC22_EXTI0_Pin EC21_EXTI1_Pin EC12_EXTI2_Pin EC11_EXTI3_Pin */
+  GPIO_InitStruct.Pin = EC22_EXTI0_Pin|EC21_EXTI1_Pin|EC12_EXTI2_Pin|EC11_EXTI3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI2_3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_3_IRQn);
 
 }
 

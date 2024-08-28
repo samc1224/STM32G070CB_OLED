@@ -1,0 +1,7 @@
+[Bb]uild/
+[Dd]ebug/
+[Dd]ist/
+[Re]lease/
+MakeFile-*.*
+.svn
+.settings

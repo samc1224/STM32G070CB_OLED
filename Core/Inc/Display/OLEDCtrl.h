@@ -8,6 +8,12 @@
 #ifndef INC_DISPLAY_OLEDCTRL_H_
 #define INC_DISPLAY_OLEDCTRL_H_
 
-void OLED_ShowString_11x18(char* str);
+#include "main.h"
+
+void OLED_Clear(uint8_t color);
+void OLED_ShowString_16x26W(uint8_t x, uint8_t y, char* str);
+void OLED_ShowString_11x18W(uint8_t x, uint8_t y, char* str);
+void OLED_ShowString_7x10W(uint8_t x, uint8_t y, char* str);
+void OLED_ShowChar_11x18W(uint8_t x, uint8_t y, char ch);
 
 #endif /* INC_DISPLAY_OLEDCTRL_H_ */

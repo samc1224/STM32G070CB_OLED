@@ -31,6 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdint.h>
 
 /* USER CODE END Includes */
 
@@ -83,6 +84,18 @@ void Error_Handler(void);
 #define PS7_GPIO_Port GPIOB
 #define PS8_Pin GPIO_PIN_1
 #define PS8_GPIO_Port GPIOB
+#define EC22_EXTI0_Pin GPIO_PIN_0
+#define EC22_EXTI0_GPIO_Port GPIOD
+#define EC22_EXTI0_EXTI_IRQn EXTI0_1_IRQn
+#define EC21_EXTI1_Pin GPIO_PIN_1
+#define EC21_EXTI1_GPIO_Port GPIOD
+#define EC21_EXTI1_EXTI_IRQn EXTI0_1_IRQn
+#define EC12_EXTI2_Pin GPIO_PIN_2
+#define EC12_EXTI2_GPIO_Port GPIOD
+#define EC12_EXTI2_EXTI_IRQn EXTI2_3_IRQn
+#define EC11_EXTI3_Pin GPIO_PIN_3
+#define EC11_EXTI3_GPIO_Port GPIOD
+#define EC11_EXTI3_EXTI_IRQn EXTI2_3_IRQn
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

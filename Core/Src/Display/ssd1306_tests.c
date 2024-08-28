@@ -134,8 +134,6 @@ void ssd1306_TestBorder() {
     
         HAL_Delay(1);
     } while(x > 0 || y > 0);
-   
-    HAL_Delay(1000);
 }
 
 void ssd1306_TestFonts1() {
@@ -231,12 +229,12 @@ void ssd1306_TestFPS() {
     ssd1306_SetCursor(2,0);
     ssd1306_WriteString("Testing...", Font_11x18, Black);
     ssd1306_UpdateScreen();
-    HAL_Delay(1000);
+    HAL_Delay(500);
     //ssd1306_SetCursor(2, 18*2);
     ssd1306_SetCursor(2,0);
     ssd1306_WriteString("0123456789A", Font_11x18, Black);
     ssd1306_UpdateScreen();
-    HAL_Delay(1000);
+    HAL_Delay(500);
    
     uint32_t start = HAL_GetTick();
     uint32_t end = start;
@@ -362,11 +360,11 @@ void ssd1306_TestDrawBitmap()
     ssd1306_Fill(White);
     ssd1306_DrawBitmap(0,0,garfield_128x64,128,64,Black);
     ssd1306_UpdateScreen();
-    HAL_Delay(2000);
+    HAL_Delay(500);
     ssd1306_Fill(Black);
     ssd1306_DrawBitmap(32,0,github_logo_64x64,64,64,White);
     ssd1306_UpdateScreen();
-    HAL_Delay(2000);
+    HAL_Delay(500);
     ssd1306_Fill(White);
     ssd1306_DrawBitmap(32,0,github_logo_64x64,64,64,Black);
     ssd1306_UpdateScreen();
@@ -376,18 +374,19 @@ void ssd1306_TestAll() {
     //ssd1306_Init();
 
     ssd1306_TestFPS();
-    HAL_Delay(2000);
+    HAL_Delay(500);
     //ssd1306_TestBorder();
+    //HAL_Delay(500);
     ssd1306_TestFonts1();
-    HAL_Delay(2000);
+    HAL_Delay(500);
     ssd1306_TestFonts2();
-    HAL_Delay(2000);
+    HAL_Delay(500);
     ssd1306_TestFonts3();
-    HAL_Delay(2000);
+    HAL_Delay(500);
     ssd1306_Fill(Black);
     ssd1306_TestRectangle();
     ssd1306_TestLine();
-    HAL_Delay(2000);
+    HAL_Delay(500);
     /*
     ssd1306_Fill(Black);
     ssd1306_TestRectangleFill();
@@ -404,8 +403,8 @@ void ssd1306_TestAll() {
     */
     ssd1306_Fill(Black);
     ssd1306_TestCircle();
-    HAL_Delay(2000);
+    HAL_Delay(500);
     ssd1306_TestDrawBitmap();
-    HAL_Delay(2000);
+    HAL_Delay(500);
 }
 

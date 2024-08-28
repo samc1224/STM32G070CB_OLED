@@ -8,6 +8,7 @@
 #include "main.h"
 #include "TestFunc/TestFunc.h"
 #include "Display/OLEDCtrl.h"
+#include "Generic/Activation.h"
 
 static void ShowCurrentParameter(void)
 {
@@ -26,21 +27,23 @@ static void ShowCurrentParameter(void)
 
 static void LedAllOff(void)
 {
-	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+	WriteLED(LED1, 0);
+	WriteLED(LED2, 0);
+	WriteLED(LED3, 0);
+	WriteLED(LED4, 0);
+	WriteLED(LED5, 0);
 }
 
 void TestButtonTask(void)
 {
 	int keyOfPrgs;
 
-	char strBtn[] = {"Button_X"};
+	char strBtn[] = {"PSx_Button"};
 
+	OLED_Clear(0);
+	OLED_ShowString_11x18W(6, 11, "Button Test");
+    HAL_Delay(300);
 	ShowCurrentParameter();
-	OLED_ShowString_11x18("Button Test");
 
 	do
 	{
@@ -51,83 +54,89 @@ void TestButtonTask(void)
 			break;
 		}
 
-		if(HAL_GPIO_ReadPin(PS1_GPIO_Port, PS1_Pin) == GPIO_PIN_RESET)
+		if(!ReadButton(Button1))
 		{
 			LedAllOff();
-			HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-			strBtn[7] = '1';
-			OLED_ShowString_11x18(strBtn);
+			WriteLED(LED3, 1);
+			strBtn[2] = '1';
+			OLED_Clear(0);
+			OLED_ShowString_11x18W(11, 0, strBtn);
+			OLED_ShowString_7x10W(33, 22, "(LED-3 On)");
 			SEGGER_RTT_printf(0, "-> Press PS1 Button\r\n");
-		    HAL_Delay(500);
+		    HAL_Delay(300);
 		}
-		if(HAL_GPIO_ReadPin(PS2_GPIO_Port, PS2_Pin) == GPIO_PIN_RESET)
+		if(!ReadButton(Button2))
 		{
 			LedAllOff();
-			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-			strBtn[7] = '2';
-			OLED_ShowString_11x18(strBtn);
+			WriteLED(LED4, 1);
+			strBtn[2] = '2';
+			OLED_Clear(0);
+			OLED_ShowString_11x18W(11, 0, strBtn);
+			OLED_ShowString_7x10W(33, 22, "(LED-4 On)");
 			SEGGER_RTT_printf(0, "-> Press PS2 Button\r\n");
-		    HAL_Delay(500);
+		    HAL_Delay(300);
 		}
-		if(HAL_GPIO_ReadPin(PS3_GPIO_Port, PS3_Pin) == GPIO_PIN_RESET)
+		if(!ReadButton(Button3))
 		{
 			LedAllOff();
-			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-			strBtn[7] = '3';
-			OLED_ShowString_11x18(strBtn);
+			WriteLED(LED5, 1);
+			strBtn[2] = '3';
+			OLED_Clear(0);
+			OLED_ShowString_11x18W(11, 0, strBtn);
+			OLED_ShowString_7x10W(33, 22, "(LED-5 On)");
 			SEGGER_RTT_printf(0, "-> Press PS3 Button\r\n");
-		    HAL_Delay(500);
+		    HAL_Delay(300);
 		}
-		if(HAL_GPIO_ReadPin(PS4_GPIO_Port, PS4_Pin) == GPIO_PIN_RESET)
+		if(!ReadButton(Button4))
 		{
 			LedAllOff();
-			HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
-			strBtn[7] = '4';
-			OLED_ShowString_11x18(strBtn);
+			WriteLED(LED2, 1);
+			strBtn[2] = '4';
+			OLED_Clear(0);
+			OLED_ShowString_11x18W(11, 0, strBtn);
+			OLED_ShowString_7x10W(33, 22, "(LED-2 On)");
 			SEGGER_RTT_printf(0, "-> Press PS4 Button\r\n");
-		    HAL_Delay(500);
+		    HAL_Delay(300);
 		}
-		if(HAL_GPIO_ReadPin(PS5_GPIO_Port, PS5_Pin) == GPIO_PIN_RESET)
+		if(!ReadButton(Button5))
 		{
 			LedAllOff();
-			HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET);
-			strBtn[7] = '5';
-			OLED_ShowString_11x18(strBtn);
+			WriteLED(LED1, 1);
+			strBtn[2] = '5';
+			OLED_Clear(0);
+			OLED_ShowString_11x18W(11, 0, strBtn);
+			OLED_ShowString_7x10W(33, 22, "(LED-1 On)");
 			SEGGER_RTT_printf(0, "-> Press PS5 Button\r\n");
-		    HAL_Delay(500);
+		    HAL_Delay(300);
 		}
-		if(HAL_GPIO_ReadPin(PS6_GPIO_Port, PS6_Pin) == GPIO_PIN_RESET)
+		if(!ReadButton(Button6))
 		{
 			LedAllOff();
-			HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-			strBtn[7] = '6';
-			OLED_ShowString_11x18(strBtn);
+			strBtn[2] = '6';
+			OLED_Clear(0);
+			OLED_ShowString_11x18W(11, 0, strBtn);
+			OLED_ShowString_7x10W(33, 22, "(LED Off)");
 			SEGGER_RTT_printf(0, "-> Press PS6 Button\r\n");
-		    HAL_Delay(500);
+		    HAL_Delay(300);
 		}
-		if(HAL_GPIO_ReadPin(PS7_GPIO_Port, PS7_Pin) == GPIO_PIN_RESET)
+		if(!ReadButton(Button7))
 		{
 			LedAllOff();
-			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
-			strBtn[7] = '7';
-			OLED_ShowString_11x18(strBtn);
+			strBtn[2] = '7';
+			OLED_Clear(0);
+			OLED_ShowString_11x18W(11, 0, strBtn);
+			OLED_ShowString_7x10W(33, 22, "(LED Off)");
 			SEGGER_RTT_printf(0, "-> Press PS7 Button\r\n");
-		    HAL_Delay(500);
+		    HAL_Delay(300);
 		}
-		if(HAL_GPIO_ReadPin(PS8_GPIO_Port, PS8_Pin) == GPIO_PIN_RESET)
+		if(!ReadButton(Button8))
 		{
 			LedAllOff();
-			HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET);
-			strBtn[7] = '8';
-			OLED_ShowString_11x18(strBtn);
+			OLED_Clear(0);
+			OLED_ShowString_11x18W(22, 11, "(Return)");
 			SEGGER_RTT_printf(0, "-> Press PS8 Button\r\n");
 		    HAL_Delay(500);
+			break;
 		}
 	}
 	while(1);
