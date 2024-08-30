@@ -1,6 +1,8 @@
 #MicroXplorer Configuration settings - do not modify
 File.Version=6
 GPIO.groupedBy=Group By Peripherals
+I2C2.IPParameters=OwnAddress
+I2C2.OwnAddress=0
 KeepUserPlacement=false
 Mcu.CPN=STM32G070CBT6
 Mcu.Family=STM32G0
@@ -41,8 +43,8 @@ Mcu.UserConstants=
 Mcu.UserName=STM32G070CBTx
 MxCube.Version=6.5.0
 MxDb.Version=DB.6.0.50
-NVIC.EXTI0_1_IRQn=true\:0\:0\:false\:false\:true\:true\:true\:true
-NVIC.EXTI2_3_IRQn=true\:0\:0\:false\:false\:true\:true\:true\:true
+NVIC.EXTI0_1_IRQn=true\:0\:0\:true\:false\:true\:true\:true\:true
+NVIC.EXTI2_3_IRQn=true\:0\:0\:true\:false\:true\:true\:true\:true
 NVIC.ForceEnableDMAVector=true
 NVIC.HardFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:true
 NVIC.NonMaskableInt_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:true

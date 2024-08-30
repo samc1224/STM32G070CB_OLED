@@ -11,12 +11,17 @@
 #include "Display/ssd1306.h"
 #include "Display/ssd1306_fonts.h"
 
-// OLED can display the Y-axis up to 32, and will not display if it exceeds 32
+void OLED_Reset(void)
+{
+	ssd1306_Init();
+}
+
 void OLED_Clear(uint8_t color)
 {
 	ssd1306_Fill(color); // 0:Black, 1:White
 }
 
+// OLED can display the Y-axis up to 32, and will not display if it exceeds 32
 void OLED_ShowString_16x26W(uint8_t x, uint8_t y, char* str)
 {
 	#ifdef SSD1306_INCLUDE_FONT_16x26

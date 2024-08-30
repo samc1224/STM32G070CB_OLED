@@ -5,7 +5,6 @@
  *      Author: Sam
  */
 
-#include <stdbool.h>
 #include "main.h"
 #include "TestFunc/TestFunc.h"
 #include "Display/OLEDCtrl.h"
@@ -61,6 +60,7 @@ PrcsRes TestFuncTask(void)
 			switch(SEGGER_RTT_GetKey())
 			{
 				case '0':
+					SEGGER_RTT_printf(0, "\r\n(OLED Show: YellowStone)\r\n");
 					ShowYellowStone();
 					taskSeq = TestFuncTaskSeq_ShowHintTitle;
 					break;
@@ -94,7 +94,7 @@ PrcsRes TestFuncTask(void)
 				SEGGER_RTT_printf(0, "\r\n(Encoder Testing...)\r\n");
 				SEGGER_RTT_printf(0, "(Forward: LED On, Reverse: LED Off)\r\n");
 				OLED_Clear(0);
-				OLED_ShowString_11x18W(0, 0, "Encoder Test");
+				OLED_ShowString_11x18W(0, 11, "EncoderTest");
 			}
 			else if(!ReadButton(Button7))
 			{

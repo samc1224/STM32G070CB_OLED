@@ -5,15 +5,17 @@
  *      Author: Sam
  */
 
-#include "Display/ssd1306.h"
+#include "Display/OLEDCtrl.h"
+#include "Generic/Encoder.h"
 #include "TestFunc/TestFunc.h"
 
 void AppInit(void)
 {
-	ssd1306_Init();
+	OLED_Reset();
 }
 
 void AppTask(void)
 {
+	EncoderTask();
 	TestFuncTask();
 }
