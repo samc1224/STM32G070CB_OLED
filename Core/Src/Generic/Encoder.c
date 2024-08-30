@@ -5,9 +5,10 @@
  *      Author: Sam
  */
 
+#include "RTT/SEGGER_RTT.h"
 #include "Generic/Encoder.h"
 #include "Generic/Activation.h"
-#include "TestFunc/TestFunc.h"
+#include "Display/OLEDCtrl.h"
 
 static EncoderParam_t EncParam =
 {
@@ -222,6 +223,9 @@ void EncoderTask(void)
 {
 	static uint16_t cntEnc = 0;
 
+	uint16_t cntTmp = 0;
+	char strCnt[] = {"Count:     "};
+
 	if(EncParam.SignalRisingEXTI)
 	{
 		EncParam.SignalRisingEXTI = 0;
@@ -229,6 +233,12 @@ void EncoderTask(void)
 		if(cntEnc != EncParam.Count)
 		{
 			cntEnc = EncParam.Count;
+			OLED_Clear(0);
+			cntTmp = cntEnc % 100;
+			strCnt[6] = (cntTmp / 10) + '0';
+			strCnt[7] = (cntTmp % 10) + '0';
+			OLED_ShowString_11x18W(0, 0, strCnt);
+			OLED_ShowString_7x10W(2, 22, "(Encoder Testing)");
 			SEGGER_RTT_printf(0, "-> Count: %d\r\n", EncParam.Count);
 		}
 	}
@@ -239,6 +249,12 @@ void EncoderTask(void)
 		if(cntEnc != EncParam.Count)
 		{
 			cntEnc = EncParam.Count;
+			OLED_Clear(0);
+			cntTmp = cntEnc % 100;
+			strCnt[6] = (cntTmp / 10) + '0';
+			strCnt[7] = (cntTmp % 10) + '0';
+			OLED_ShowString_11x18W(0, 0, strCnt);
+			OLED_ShowString_7x10W(2, 22, "(Encoder Testing)");
 			SEGGER_RTT_printf(0, "-> Count: %d\r\n", EncParam.Count);
 		}
 	}
