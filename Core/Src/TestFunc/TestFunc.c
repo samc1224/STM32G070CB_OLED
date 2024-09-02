@@ -47,9 +47,13 @@ PrcsRes TestFuncTask(void)
 			SEGGER_RTT_printf(0, "* You are now enter into Test Mode.           *\r\n");
 			SEGGER_RTT_printf(0, "* Enter Test KeyWord to launch Test Function. *\r\n\r\n");
 			//
-			SEGGER_RTT_printf(0, "-> Click '1' > OLED Test\r\n");
-			SEGGER_RTT_printf(0, "-> Click '2' > Button & LED Test\r\n");
-			SEGGER_RTT_printf(0, "-> Click '3' > Encoder Test\r\n");
+			SEGGER_RTT_printf(0, "-> Click '1' > OLED Test Function\r\n");
+			SEGGER_RTT_printf(0, "-> Click '2' > Button & LED Test Function\r\n");
+			SEGGER_RTT_printf(0, "-> Click '3' > Encoder Test Function\r\n");
+			SEGGER_RTT_printf(0, "-> Click '4' > Get Button Status\r\n");
+			SEGGER_RTT_printf(0, "-> Click '5' > Set LED On/Off\r\n");
+			SEGGER_RTT_printf(0, "-> Click '6' > Set Relay On/Off\r\n");
+			SEGGER_RTT_printf(0, "-> Click '0' > Title\r\n");
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(0, 0, "Main Menu");
 			OLED_ShowString_7x10W(2, 22, "1->OLED, 2->Button");
@@ -59,11 +63,6 @@ PrcsRes TestFuncTask(void)
 		case TestFuncTaskSeq_GetTestSeries:
 			switch(SEGGER_RTT_GetKey())
 			{
-				case '0':
-					SEGGER_RTT_printf(0, "\r\n(OLED Show: YellowStone)\r\n");
-					ShowYellowStone();
-					taskSeq = TestFuncTaskSeq_ShowHintTitle;
-					break;
 				case '1':
 					testFunc = TestOledTask;
 					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
@@ -73,9 +72,29 @@ PrcsRes TestFuncTask(void)
 					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
 					break;
 				case '3':
-					SEGGER_RTT_printf(0, "\r\n(Encoder Testing...)\r\n");
-					SEGGER_RTT_printf(0, "(Forward: LED On, Reverse: LED Off)\r\n");
+					SEGGER_RTT_printf(0, "(Encoder Testing...)\r\n\r\n");
+					SEGGER_RTT_printf(0, "(Forward: Count Up, Reverse: Count Down)\r\n");
+					OLED_Clear(0);
+					OLED_ShowString_11x18W(0, 11, "EncoderTest");
 					taskSeq = TestFuncTaskSeq_GetTestSeries;
+					break;
+				case '4':
+					testFunc = TestActivationButtonTask;
+					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
+					break;
+				case '5':
+					testFunc = TestActivationLedTask;
+					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
+					break;
+				case '6':
+					testFunc = TestActivationRelayTask;
+					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
+					break;
+				case '0':
+					SEGGER_RTT_printf(0, "(Return to Main Menu)\r\n");
+					SEGGER_RTT_printf(0, "(OLED Show \"YellowStone\")\r\n\r\n");
+					ShowYellowStone();
+					taskSeq = TestFuncTaskSeq_ShowHintTitle;
 					break;
 			}
 
@@ -91,7 +110,7 @@ PrcsRes TestFuncTask(void)
 			}
 			else if(!ReadButton(Button3))
 			{
-				SEGGER_RTT_printf(0, "\r\n(Encoder Testing...)\r\n");
+				SEGGER_RTT_printf(0, "(Encoder Testing...)\r\n\r\n");
 				SEGGER_RTT_printf(0, "(Forward: LED On, Reverse: LED Off)\r\n");
 				OLED_Clear(0);
 				OLED_ShowString_11x18W(0, 11, "EncoderTest");
@@ -99,6 +118,10 @@ PrcsRes TestFuncTask(void)
 			else if(!ReadButton(Button7))
 			{
 				ShowYellowStone();
+				taskSeq = TestFuncTaskSeq_ShowHintTitle;
+			}
+			else if(!ReadButton(Button8))
+			{
 				taskSeq = TestFuncTaskSeq_ShowHintTitle;
 			}
 			break;

@@ -70,3 +70,75 @@ void WriteLED(LEDPin led, GPIO_PinState sta)
 		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, sta);
 	}
 }
+
+void WriteRelay(RelayPin rly, GPIO_PinState sta)
+{
+	if(rly == Relay1)
+	{
+		HAL_GPIO_WritePin(RLY_1_GPIO_Port, RLY_1_Pin, sta);
+	}
+	else if(rly == Relay2)
+	{
+		HAL_GPIO_WritePin(RLY_2_GPIO_Port, RLY_2_Pin, sta);
+	}
+	else if(rly == Relay3)
+	{
+		HAL_GPIO_WritePin(RLY_3_GPIO_Port, RLY_3_Pin, sta);
+	}
+	else if(rly == Relay4)
+	{
+		HAL_GPIO_WritePin(RLY_4_GPIO_Port, RLY_4_Pin, sta);
+	}
+	else if(rly == Relay5)
+	{
+		HAL_GPIO_WritePin(RLY_5_GPIO_Port, RLY_5_Pin, sta);
+	}
+	else if(rly == Relay6)
+	{
+		HAL_GPIO_WritePin(RLY_6_GPIO_Port, RLY_6_Pin, sta);
+	}
+	else if(rly == Relay7)
+	{
+		HAL_GPIO_WritePin(RLY_7_GPIO_Port, RLY_7_Pin, sta);
+	}
+	else if(rly == Relay8)
+	{
+		HAL_GPIO_WritePin(RLY_8_GPIO_Port, RLY_8_Pin, sta);
+	}
+	else if(rly == Relay9)
+	{
+		HAL_GPIO_WritePin(RLY_9_GPIO_Port, RLY_9_Pin, sta);
+	}
+	else if(rly == RelayOpen)
+	{
+		HAL_GPIO_WritePin(RLY_Open_GPIO_Port, RLY_Open_Pin, sta);
+	}
+	else if(rly == RelayShort)
+	{
+		HAL_GPIO_WritePin(RLY_Short_GPIO_Port, RLY_Short_Pin, sta);
+	}
+}
+
+void LedAllOff(void)
+{
+	WriteLED(LED1, 0);
+	WriteLED(LED2, 0);
+	WriteLED(LED3, 0);
+	WriteLED(LED4, 0);
+	WriteLED(LED5, 0);
+}
+
+void RelayAllOff(void)
+{
+	WriteRelay(Relay1, 0);
+	WriteRelay(Relay2, 0);
+	WriteRelay(Relay3, 0);
+	WriteRelay(Relay4, 0);
+	WriteRelay(Relay5, 0);
+	WriteRelay(Relay6, 0);
+	WriteRelay(Relay7, 0);
+	WriteRelay(Relay8, 0);
+	WriteRelay(Relay9, 0);
+	WriteRelay(RelayOpen, 0);
+	WriteRelay(RelayShort, 0);
+}

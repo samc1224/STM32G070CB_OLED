@@ -25,15 +25,6 @@ static void ShowCurrentParameter(void)
 	SEGGER_RTT_printf(0, "-> 0) Quit\r\n");
 }
 
-static void LedAllOff(void)
-{
-	WriteLED(LED1, 0);
-	WriteLED(LED2, 0);
-	WriteLED(LED3, 0);
-	WriteLED(LED4, 0);
-	WriteLED(LED5, 0);
-}
-
 void TestButtonTask(void)
 {
 	int keyOfPrgs;

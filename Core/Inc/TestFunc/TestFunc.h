@@ -28,4 +28,10 @@ void TestOledTask(void);
 
 void TestButtonTask(void);
 
+void TestActivationButtonTask(void);
+
+void TestActivationLedTask(void);
+
+void TestActivationRelayTask(void);
+
 #endif /* INC_TESTFUNC_H_ */

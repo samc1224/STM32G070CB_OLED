@@ -28,17 +28,6 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g0xx_hal.h"
-#include "stm32g0xx_ll_crc.h"
-#include "stm32g0xx_ll_bus.h"
-#include "stm32g0xx_ll_cortex.h"
-#include "stm32g0xx_ll_rcc.h"
-#include "stm32g0xx_ll_system.h"
-#include "stm32g0xx_ll_utils.h"
-#include "stm32g0xx_ll_pwr.h"
-#include "stm32g0xx_ll_gpio.h"
-#include "stm32g0xx_ll_dma.h"
-
-#include "stm32g0xx_ll_exti.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -96,6 +85,28 @@ void Error_Handler(void);
 #define PS7_GPIO_Port GPIOB
 #define PS8_Pin GPIO_PIN_1
 #define PS8_GPIO_Port GPIOB
+#define RLY_1_Pin GPIO_PIN_12
+#define RLY_1_GPIO_Port GPIOB
+#define RLY_Short_Pin GPIO_PIN_13
+#define RLY_Short_GPIO_Port GPIOB
+#define RLY_Open_Pin GPIO_PIN_14
+#define RLY_Open_GPIO_Port GPIOB
+#define RLY_5_Pin GPIO_PIN_15
+#define RLY_5_GPIO_Port GPIOB
+#define RLY_4_Pin GPIO_PIN_8
+#define RLY_4_GPIO_Port GPIOA
+#define RLY_3_Pin GPIO_PIN_9
+#define RLY_3_GPIO_Port GPIOA
+#define RLY_2_Pin GPIO_PIN_6
+#define RLY_2_GPIO_Port GPIOC
+#define RLY_9_Pin GPIO_PIN_7
+#define RLY_9_GPIO_Port GPIOC
+#define RLY_8_Pin GPIO_PIN_10
+#define RLY_8_GPIO_Port GPIOA
+#define RLY_7_Pin GPIO_PIN_11
+#define RLY_7_GPIO_Port GPIOA
+#define RLY_6_Pin GPIO_PIN_12
+#define RLY_6_GPIO_Port GPIOA
 #define EC22_EXTI0_Pin GPIO_PIN_0
 #define EC22_EXTI0_GPIO_Port GPIOD
 #define EC22_EXTI0_EXTI_IRQn EXTI0_1_IRQn

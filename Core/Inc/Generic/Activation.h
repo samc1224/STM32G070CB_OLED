@@ -12,7 +12,7 @@
 
 typedef enum
 {
-	Button0,
+	Button0, // 0: Not used
 	Button1,
 	Button2,
 	Button3,
@@ -25,7 +25,7 @@ typedef enum
 
 typedef enum
 {
-	LED0,
+	LED0, // 0: Not used
 	LED1,
 	LED2,
 	LED3,
@@ -33,7 +33,26 @@ typedef enum
 	LED5,
 }LEDPin;
 
+typedef enum
+{
+	Relay0, // 0: Not used
+	Relay1,
+	Relay2,
+	Relay3,
+	Relay4,
+	Relay5,
+	Relay6,
+	Relay7,
+	Relay8,
+	Relay9,
+	RelayOpen,
+	RelayShort,
+}RelayPin;
+
 GPIO_PinState ReadButton(ButtonPin btn);
 void WriteLED(LEDPin led, GPIO_PinState sta);
+void WriteRelay(RelayPin rly, GPIO_PinState sta);
+void LedAllOff(void);
+void RelayAllOff(void);
 
 #endif /* INC_GENERIC_ACTIVATION_H_ */
