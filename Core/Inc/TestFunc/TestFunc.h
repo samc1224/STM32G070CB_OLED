@@ -24,6 +24,8 @@ typedef enum
  */
 PrcsRes TestFuncTask(void);
 
+void TestRelayTask(void);
+
 void TestOledTask(void);
 
 void TestButtonTask(void);

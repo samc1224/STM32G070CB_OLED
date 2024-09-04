@@ -50,7 +50,7 @@ void TestOledTask(void)
 		    HAL_Delay(500);
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 11, "Show Font1");
-			ShowCurrentParameter();
+			SEGGER_RTT_printf(0, "-> (Show Font1)\r\n");
 		}
 		else if(keyOfPrgs == '2')
 		{
@@ -58,7 +58,7 @@ void TestOledTask(void)
 		    HAL_Delay(500);
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 11, "Show Font2");
-			ShowCurrentParameter();
+			SEGGER_RTT_printf(0, "-> (Show Font2)\r\n");
 		}
 		else if(keyOfPrgs == '3')
 		{
@@ -66,7 +66,7 @@ void TestOledTask(void)
 		    HAL_Delay(500);
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 11, "Show Font3");
-			ShowCurrentParameter();
+			SEGGER_RTT_printf(0, "-> (Show Font3)\r\n");
 		}
 		else if(keyOfPrgs == '4' || !ReadButton(Button3))
 		{
@@ -74,7 +74,7 @@ void TestOledTask(void)
 		    HAL_Delay(500);
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(22, 11, "Show FPS");
-			ShowCurrentParameter();
+			SEGGER_RTT_printf(0, "-> (Show FPS)\r\n");
 		}
 		else if(keyOfPrgs == '5' || !ReadButton(Button4))
 		{
@@ -82,8 +82,8 @@ void TestOledTask(void)
 		    ssd1306_TestCircle();
 		    HAL_Delay(500);
 			OLED_Clear(0);
-			OLED_ShowString_11x18W(0, 11, "Show Circle");
-			ShowCurrentParameter();
+			OLED_ShowString_11x18W(6, 11, "Show Circle");
+			SEGGER_RTT_printf(0, "-> (Show Circle)\r\n");
 		}
 		else if(keyOfPrgs == '6')
 		{
@@ -93,7 +93,7 @@ void TestOledTask(void)
 		    HAL_Delay(500);
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 11, "Show Frame");
-			ShowCurrentParameter();
+			SEGGER_RTT_printf(0, "-> (Show Rectangle)\r\n");
 		}
 		else if(keyOfPrgs == '7' || !ReadButton(Button5))
 		{
@@ -101,7 +101,7 @@ void TestOledTask(void)
 		    HAL_Delay(500);
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 11, "Show Image");
-			ShowCurrentParameter();
+			SEGGER_RTT_printf(0, "-> (Show Image)\r\n");
 		}
 		else if(keyOfPrgs == '8' || !ReadButton(Button6))
 		{
@@ -109,7 +109,7 @@ void TestOledTask(void)
 		    HAL_Delay(500);
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(0, 11, "Show Border");
-			ShowCurrentParameter();
+			SEGGER_RTT_printf(0, "-> (Show Border)\r\n");
 		}
 		else if(keyOfPrgs == '9' || !ReadButton(Button7))
 		{
@@ -117,7 +117,7 @@ void TestOledTask(void)
 		    HAL_Delay(500);
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 11, "Show Multi");
-			ShowCurrentParameter();
+			SEGGER_RTT_printf(0, "-> (Show Multiple Tests)\r\n");
 		}
 
 		if(!ReadButton(Button1))
@@ -127,12 +127,13 @@ void TestOledTask(void)
 		    HAL_Delay(500);
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(22, 11, "Big Font");
-			ShowCurrentParameter();
+			SEGGER_RTT_printf(0, "-> (Show Big Font)\r\n");
 		}
 		else if(!ReadButton(Button8))
 		{
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(22, 11, "(Return)");
+			SEGGER_RTT_printf(0, "-> (Return to Main Menu)\r\n\r\n");
 		    HAL_Delay(500);
 			break;
 		}

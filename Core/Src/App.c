@@ -14,7 +14,6 @@ void AppInit(void)
 {
 	OLED_Reset();
 	I2C2_Init();
-	//ChI2C_updateAddr(0x75, 0x10);//I2C2: PMH => TJB, 0x40: USU, 0x10: ETU
 }
 
 void AppTask(void)
@@ -22,5 +21,4 @@ void AppTask(void)
 	EncoderTask();
 	TestFuncTask();
 	I2C2_Listen();
-	//ChI2C_task();
 }

@@ -8,7 +8,7 @@
 #ifndef INC_DISPLAY_OLEDCTRL_H_
 #define INC_DISPLAY_OLEDCTRL_H_
 
-#include "main.h"
+#include <stdint.h>
 
 void OLED_Reset(void);
 void OLED_Clear(uint8_t color);

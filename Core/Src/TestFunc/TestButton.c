@@ -22,7 +22,7 @@ static void ShowCurrentParameter(void)
 	SEGGER_RTT_printf(0, "-> 6) PS6 Button Test\r\n");
 	SEGGER_RTT_printf(0, "-> 7) PS7 Button Test\r\n");
 	SEGGER_RTT_printf(0, "-> 8) PS8 Button Test\r\n");
-	SEGGER_RTT_printf(0, "-> 0) Quit\r\n");
+	SEGGER_RTT_printf(0, "-> 0) Quit\r\n\r\n");
 }
 
 void TestButtonTask(void)
@@ -53,7 +53,7 @@ void TestButtonTask(void)
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 0, strBtn);
 			OLED_ShowString_7x10W(33, 22, "(LED-3 On)");
-			SEGGER_RTT_printf(0, "-> Press PS1 Button\r\n");
+			SEGGER_RTT_printf(0, "-> (Press PS1 Button)\r\n");
 		    HAL_Delay(300);
 		}
 		if(!ReadButton(Button2))
@@ -64,7 +64,7 @@ void TestButtonTask(void)
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 0, strBtn);
 			OLED_ShowString_7x10W(33, 22, "(LED-4 On)");
-			SEGGER_RTT_printf(0, "-> Press PS2 Button\r\n");
+			SEGGER_RTT_printf(0, "-> (Press PS2 Button)\r\n");
 		    HAL_Delay(300);
 		}
 		if(!ReadButton(Button3))
@@ -75,7 +75,7 @@ void TestButtonTask(void)
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 0, strBtn);
 			OLED_ShowString_7x10W(33, 22, "(LED-5 On)");
-			SEGGER_RTT_printf(0, "-> Press PS3 Button\r\n");
+			SEGGER_RTT_printf(0, "-> (Press PS3 Button)\r\n");
 		    HAL_Delay(300);
 		}
 		if(!ReadButton(Button4))
@@ -86,7 +86,7 @@ void TestButtonTask(void)
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 0, strBtn);
 			OLED_ShowString_7x10W(33, 22, "(LED-2 On)");
-			SEGGER_RTT_printf(0, "-> Press PS4 Button\r\n");
+			SEGGER_RTT_printf(0, "-> (Press PS4 Button)\r\n");
 		    HAL_Delay(300);
 		}
 		if(!ReadButton(Button5))
@@ -97,7 +97,7 @@ void TestButtonTask(void)
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 0, strBtn);
 			OLED_ShowString_7x10W(33, 22, "(LED-1 On)");
-			SEGGER_RTT_printf(0, "-> Press PS5 Button\r\n");
+			SEGGER_RTT_printf(0, "-> (Press PS5 Button)\r\n");
 		    HAL_Delay(300);
 		}
 		if(!ReadButton(Button6))
@@ -107,7 +107,7 @@ void TestButtonTask(void)
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 0, strBtn);
 			OLED_ShowString_7x10W(33, 22, "(LED Off)");
-			SEGGER_RTT_printf(0, "-> Press PS6 Button\r\n");
+			SEGGER_RTT_printf(0, "-> (Press PS6 Button)\r\n");
 		    HAL_Delay(300);
 		}
 		if(!ReadButton(Button7))
@@ -117,7 +117,7 @@ void TestButtonTask(void)
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 0, strBtn);
 			OLED_ShowString_7x10W(33, 22, "(LED Off)");
-			SEGGER_RTT_printf(0, "-> Press PS7 Button\r\n");
+			SEGGER_RTT_printf(0, "-> (Press PS7 Button)\r\n");
 		    HAL_Delay(300);
 		}
 		if(!ReadButton(Button8))
@@ -125,7 +125,7 @@ void TestButtonTask(void)
 			LedAllOff();
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(22, 11, "(Return)");
-			SEGGER_RTT_printf(0, "-> Press PS8 Button\r\n");
+			SEGGER_RTT_printf(0, "-> (Press PS8 Button)\r\n\r\n");
 		    HAL_Delay(500);
 			break;
 		}
