@@ -28,7 +28,7 @@ EncoderParam_t ReadEncoderParam(void);
 
 void WriteEncoderParam(EncoderParam_t param);
 
-void SetEncoderShowCount(bool setShow);
+void SetEncoderShowCount(bool isShow);
 
 void EncoderInit(void);
 

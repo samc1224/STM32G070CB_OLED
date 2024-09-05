@@ -251,9 +251,9 @@ void WriteEncoderParam(EncoderParam_t param)
 	EncParam.cntRelay = param.cntRelay;
 }
 
-void SetEncoderShowCount(bool setShow)
+void SetEncoderShowCount(bool isShow)
 {
-	EncParam.isShowCount = setShow;
+	EncParam.isShowCount = isShow;
 }
 
 void EncoderInit(void)

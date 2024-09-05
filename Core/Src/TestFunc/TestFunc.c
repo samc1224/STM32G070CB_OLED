@@ -53,6 +53,7 @@ PrcsRes TestFuncTask(void)
 			SEGGER_RTT_printf(0, "-> Click '5' > Get Button Status\r\n");
 			SEGGER_RTT_printf(0, "-> Click '6' > Set LED On/Off\r\n");
 			SEGGER_RTT_printf(0, "-> Click '0' > Return\r\n\r\n");
+			SEGGER_RTT_printf(0, "-> (Encoders are available to control Relays)\r\n");
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(0, 0, "Main Menu");
 			OLED_ShowString_7x10W(2, 22, "1:Relay, 2:OLED...");

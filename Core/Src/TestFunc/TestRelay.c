@@ -25,44 +25,6 @@ static void ConvRelayState(uint16_t sta)
 			WriteRelay(Relay9 - i, 0);
 		}
 	}
-	/*
-	if(sta & 0x100)
-		WriteRelay(Relay1, 1);
-	else
-		WriteRelay(Relay1, 0);
-	if(sta & 0x80)
-		WriteRelay(Relay2, 1);
-	else
-		WriteRelay(Relay2, 0);
-	if(sta & 0x40)
-		WriteRelay(Relay3, 1);
-	else
-		WriteRelay(Relay3, 0);
-	if(sta & 0x20)
-		WriteRelay(Relay4, 1);
-	else
-		WriteRelay(Relay4, 0);
-	if(sta & 0x10)
-		WriteRelay(Relay5, 1);
-	else
-		WriteRelay(Relay5, 0);
-	if(sta & 0x08)
-		WriteRelay(Relay6, 1);
-	else
-		WriteRelay(Relay6, 0);
-	if(sta & 0x04)
-		WriteRelay(Relay7, 1);
-	else
-		WriteRelay(Relay7, 0);
-	if(sta & 0x02)
-		WriteRelay(Relay8, 1);
-	else
-		WriteRelay(Relay8, 0);
-	if(sta & 0x01)
-		WriteRelay(Relay9, 1);
-	else
-		WriteRelay(Relay9, 0);
-	*/
 }
 
 static void ShowRelayCount(uint16_t cnt)
@@ -73,12 +35,6 @@ static void ShowRelayCount(uint16_t cnt)
 	sprintf(strCount, "%d", cnt);
 	OLED_ShowString_11x18W(0, 0, "Relay:");
 	OLED_ShowString_11x18W(68, 0, strCount);
-	/*
-	if(isOpen)
-		OLED_ShowString_7x10W(99, 5, "(On)");
-	else
-		OLED_ShowString_7x10W(99, 5, "(Off");
-	*/
 }
 
 static void ShowButtonTips(uint8_t sel)
@@ -98,6 +54,7 @@ static void ShowCurrentParameter(void)
 	SEGGER_RTT_printf(0, "---> Section of Relay Test Function <---\r\n");
 	SEGGER_RTT_printf(0, "-> Click Specific Key to Activate Function\r\n");
 	SEGGER_RTT_printf(0, "-> 0) Quit\r\n\r\n");
+	SEGGER_RTT_printf(0, "-> (Control Relays using Encoders or Buttons)\r\n");
 }
 
 void TestRelayTask(void)
