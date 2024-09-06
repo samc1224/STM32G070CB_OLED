@@ -318,8 +318,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PS7_Pin PS8_Pin */
-  GPIO_InitStruct.Pin = PS7_Pin|PS8_Pin;
+  /*Configure GPIO pins : PS7_Pin PS8_Pin Se1_Pin Se2_Pin */
+  GPIO_InitStruct.Pin = PS7_Pin|PS8_Pin|Se1_Pin|Se2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);

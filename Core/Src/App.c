@@ -13,12 +13,12 @@
 void AppInit(void)
 {
 	OLED_Reset();
-	I2C2_Init();
+	//I2C2_Init();
 }
 
 void AppTask(void)
 {
-	EncoderTask();
 	TestFuncTask();
-	I2C2_Listen();
+	//EncoderTask();
+	//I2C2_Listen();
 }

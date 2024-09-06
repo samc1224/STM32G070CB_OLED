@@ -305,8 +305,10 @@ void TestActivationRelayTask(void)
 
 static void ShowButtonParameter(TestActParam_t *param)
 {
-	SEGGER_RTT_printf(0, "---> Section of Get Button Status <--- \r\n");
-	SEGGER_RTT_printf(0, "-> Click Specific Key to Activate Function\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
+	SEGGER_RTT_printf(0, "* Current Operation: Get Button Status        *\r\n");
+	SEGGER_RTT_printf(0, "* Click Specific Key to Activate Function.    *\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
 	SEGGER_RTT_printf(0, "-> '1') Get PS1 Button (State: %s)\r\n", param->isPS1ButtonEnable ? "Low" : "High");
 	SEGGER_RTT_printf(0, "-> '2') Get PS2 Button (State: %s)\r\n", param->isPS2ButtonEnable ? "Low" : "High");
 	SEGGER_RTT_printf(0, "-> '3') Get PS3 Button (State: %s)\r\n", param->isPS3ButtonEnable ? "Low" : "High");
@@ -320,8 +322,10 @@ static void ShowButtonParameter(TestActParam_t *param)
 
 static void ShowLEDParameter(TestActParam_t *param)
 {
-	SEGGER_RTT_printf(0, "---> Section of Set LED On/Off <--- \r\n");
-	SEGGER_RTT_printf(0, "-> Click Specific Key to Activate Function\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
+	SEGGER_RTT_printf(0, "* Current Operation: Set LED On/Off           *\r\n");
+	SEGGER_RTT_printf(0, "* Click Specific Key to Activate Function.    *\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
 	SEGGER_RTT_printf(0, "-> '1') Set LD_1 (State: %s)\r\n", param->isLED1Enable ? "On" : "Off");
 	SEGGER_RTT_printf(0, "-> '2') Set LD_2 (State: %s)\r\n", param->isLED2Enable ? "On" : "Off");
 	SEGGER_RTT_printf(0, "-> '3') Set LD_3 (State: %s)\r\n", param->isLED3Enable ? "On" : "Off");
@@ -332,8 +336,10 @@ static void ShowLEDParameter(TestActParam_t *param)
 
 static void ShowRelayParameter(TestActParam_t *param)
 {
-	SEGGER_RTT_printf(0, "---> Section of Set Relay On/Off <--- \r\n");
-	SEGGER_RTT_printf(0, "-> Click Specific Key to Activate Function\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
+	SEGGER_RTT_printf(0, "* Current Operation: Set Relay On/Off         *\r\n");
+	SEGGER_RTT_printf(0, "* Click Specific Key to Activate Function.    *\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
 	SEGGER_RTT_printf(0, "-> '1') Set Relay_1 (State: %s)\r\n", param->isRelay1Enable ? "On" : "Off");
 	SEGGER_RTT_printf(0, "-> '2') Set Relay_2 (State: %s)\r\n", param->isRelay2Enable ? "On" : "Off");
 	SEGGER_RTT_printf(0, "-> '3') Set Relay_3 (State: %s)\r\n", param->isRelay3Enable ? "On" : "Off");

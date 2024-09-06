@@ -41,81 +41,141 @@ GPIO_PinState ReadButton(ButtonPin btn)
 	{
 		return HAL_GPIO_ReadPin(PS8_GPIO_Port, PS8_Pin);
 	}
+	else if(btn == ButtonSe1)
+	{
+		return HAL_GPIO_ReadPin(Se1_GPIO_Port, Se1_Pin);
+	}
+	else if(btn == ButtonSe2)
+	{
+		return HAL_GPIO_ReadPin(Se2_GPIO_Port, Se2_Pin);
+	}
 	else
 	{
 		return GPIO_PIN_RESET;
 	}
 }
 
-void WriteLED(LEDPin led, GPIO_PinState sta)
+void WriteLED(LEDPin led, GPIO_PinState pinSta)
 {
 	if(led == LED1)
 	{
-		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, sta);
+		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, pinSta);
 	}
 	else if(led == LED2)
 	{
-		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, sta);
+		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, pinSta);
 	}
 	else if(led == LED3)
 	{
-		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, sta);
+		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, pinSta);
 	}
 	else if(led == LED4)
 	{
-		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, sta);
+		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, pinSta);
 	}
 	else if(led == LED5)
 	{
-		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, sta);
+		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, pinSta);
 	}
 }
 
-void WriteRelay(RelayPin rly, GPIO_PinState sta)
+GPIO_PinState ReadRelay(RelayPin rly)
 {
 	if(rly == Relay1)
 	{
-		HAL_GPIO_WritePin(RLY_1_GPIO_Port, RLY_1_Pin, sta);
+		return HAL_GPIO_ReadPin(RLY_1_GPIO_Port, RLY_1_Pin);
 	}
 	else if(rly == Relay2)
 	{
-		HAL_GPIO_WritePin(RLY_2_GPIO_Port, RLY_2_Pin, sta);
+		return HAL_GPIO_ReadPin(RLY_2_GPIO_Port, RLY_2_Pin);
 	}
 	else if(rly == Relay3)
 	{
-		HAL_GPIO_WritePin(RLY_3_GPIO_Port, RLY_3_Pin, sta);
+		return HAL_GPIO_ReadPin(RLY_3_GPIO_Port, RLY_3_Pin);
 	}
 	else if(rly == Relay4)
 	{
-		HAL_GPIO_WritePin(RLY_4_GPIO_Port, RLY_4_Pin, sta);
+		return HAL_GPIO_ReadPin(RLY_4_GPIO_Port, RLY_4_Pin);
 	}
 	else if(rly == Relay5)
 	{
-		HAL_GPIO_WritePin(RLY_5_GPIO_Port, RLY_5_Pin, sta);
+		return HAL_GPIO_ReadPin(RLY_5_GPIO_Port, RLY_5_Pin);
 	}
 	else if(rly == Relay6)
 	{
-		HAL_GPIO_WritePin(RLY_6_GPIO_Port, RLY_6_Pin, sta);
+		return HAL_GPIO_ReadPin(RLY_6_GPIO_Port, RLY_6_Pin);
 	}
 	else if(rly == Relay7)
 	{
-		HAL_GPIO_WritePin(RLY_7_GPIO_Port, RLY_7_Pin, sta);
+		return HAL_GPIO_ReadPin(RLY_7_GPIO_Port, RLY_7_Pin);
 	}
 	else if(rly == Relay8)
 	{
-		HAL_GPIO_WritePin(RLY_8_GPIO_Port, RLY_8_Pin, sta);
+		return HAL_GPIO_ReadPin(RLY_8_GPIO_Port, RLY_8_Pin);
 	}
 	else if(rly == Relay9)
 	{
-		HAL_GPIO_WritePin(RLY_9_GPIO_Port, RLY_9_Pin, sta);
+		return HAL_GPIO_ReadPin(RLY_9_GPIO_Port, RLY_9_Pin);
 	}
 	else if(rly == RelayOpen)
 	{
-		HAL_GPIO_WritePin(RLY_Open_GPIO_Port, RLY_Open_Pin, sta);
+		return HAL_GPIO_ReadPin(RLY_Open_GPIO_Port, RLY_Open_Pin);
 	}
 	else if(rly == RelayShort)
 	{
-		HAL_GPIO_WritePin(RLY_Short_GPIO_Port, RLY_Short_Pin, sta);
+		return HAL_GPIO_ReadPin(RLY_Short_GPIO_Port, RLY_Short_Pin);
+	}
+	else
+	{
+		return GPIO_PIN_RESET;
+	}
+}
+
+void WriteRelay(RelayPin rly, GPIO_PinState pinSta)
+{
+	if(rly == Relay1)
+	{
+		HAL_GPIO_WritePin(RLY_1_GPIO_Port, RLY_1_Pin, pinSta);
+	}
+	else if(rly == Relay2)
+	{
+		HAL_GPIO_WritePin(RLY_2_GPIO_Port, RLY_2_Pin, pinSta);
+	}
+	else if(rly == Relay3)
+	{
+		HAL_GPIO_WritePin(RLY_3_GPIO_Port, RLY_3_Pin, pinSta);
+	}
+	else if(rly == Relay4)
+	{
+		HAL_GPIO_WritePin(RLY_4_GPIO_Port, RLY_4_Pin, pinSta);
+	}
+	else if(rly == Relay5)
+	{
+		HAL_GPIO_WritePin(RLY_5_GPIO_Port, RLY_5_Pin, pinSta);
+	}
+	else if(rly == Relay6)
+	{
+		HAL_GPIO_WritePin(RLY_6_GPIO_Port, RLY_6_Pin, pinSta);
+	}
+	else if(rly == Relay7)
+	{
+		HAL_GPIO_WritePin(RLY_7_GPIO_Port, RLY_7_Pin, pinSta);
+	}
+	else if(rly == Relay8)
+	{
+		HAL_GPIO_WritePin(RLY_8_GPIO_Port, RLY_8_Pin, pinSta);
+	}
+	else if(rly == Relay9)
+	{
+		HAL_GPIO_WritePin(RLY_9_GPIO_Port, RLY_9_Pin, pinSta);
+	}
+	else if(rly == RelayOpen)
+	{
+		HAL_GPIO_WritePin(RLY_Open_GPIO_Port, RLY_Open_Pin, pinSta);
+	}
+	else if(rly == RelayShort)
+	{
+		HAL_GPIO_WritePin(RLY_Short_GPIO_Port, RLY_Short_Pin, pinSta);
 	}
 }
 

@@ -14,24 +14,24 @@
 
 typedef struct
 {
-	bool EXTI_RisingEdge;
-	bool EXTI_FallingEdge;
-	bool isShowCount;
 	bool isCountUp;
+	bool isResistorConv;
 	uint16_t cntEC1;
 	uint16_t cntEC2;
 	uint8_t cntIndex;
-	uint16_t cntRelay;
+	uint16_t cntRawValue;
+	uint16_t cntRawValueTmp;
+	uint8_t cntMultipleBig;
+	uint8_t cntMultipleSmall;
 }EncoderParam_t;
 
+void ChangeEncoderBigMultiple();
+void ChangeEncoderSmallMultiple();
 EncoderParam_t ReadEncoderParam(void);
-
 void WriteEncoderParam(EncoderParam_t param);
-
-void SetEncoderShowCount(bool isShow);
-
+void SetEncoderResistorConversion(bool isConv);
+void SetEncoderCountRawValue(uint16_t cnt);
 void EncoderInit(void);
-
 void EncoderTask(void);
 
 #endif /* INC_GENERIC_ENCODER_H_ */

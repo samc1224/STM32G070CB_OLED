@@ -12,8 +12,10 @@
 
 static void ShowCurrentParameter(void)
 {
-	SEGGER_RTT_printf(0, "---> Section of Button Test Function <---\r\n");
-	SEGGER_RTT_printf(0, "-> Click Specific Key to Activate Function\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
+	SEGGER_RTT_printf(0, "* Current Operation: Button Test              *\r\n");
+	SEGGER_RTT_printf(0, "* Click Specific Key to Activate Function.    *\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
 	SEGGER_RTT_printf(0, "-> 1) PS1 Button Test\r\n");
 	SEGGER_RTT_printf(0, "-> 2) PS2 Button Test\r\n");
 	SEGGER_RTT_printf(0, "-> 3) PS3 Button Test\r\n");

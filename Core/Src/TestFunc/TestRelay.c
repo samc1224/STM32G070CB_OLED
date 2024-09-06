@@ -51,8 +51,10 @@ static void ShowButtonTips(uint8_t sel)
 
 static void ShowCurrentParameter(void)
 {
-	SEGGER_RTT_printf(0, "---> Section of Relay Test Function <---\r\n");
-	SEGGER_RTT_printf(0, "-> Click Specific Key to Activate Function\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
+	SEGGER_RTT_printf(0, "* Current Operation: Relay Test               *\r\n");
+	SEGGER_RTT_printf(0, "* Click Specific Key to Activate Function.    *\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
 	SEGGER_RTT_printf(0, "-> 0) Quit\r\n\r\n");
 	SEGGER_RTT_printf(0, "-> (Control Relays using Encoders or Buttons)\r\n");
 }
@@ -70,7 +72,6 @@ void TestRelayTask(void)
 	LedAllOff();
 	RelayAllOff();
 	EncoderInit();
-	SetEncoderShowCount(true);
 
 	OLED_Clear(0);
 	OLED_ShowString_11x18W(11, 11, "Relay Test");
@@ -104,7 +105,7 @@ void TestRelayTask(void)
 			ConvRelayState(arrRelayState[EncTest.cntIndex]);
 			ShowRelayCount(arrRelayState[EncTest.cntIndex]);
 			ShowButtonTips(0);
-			EncTest.cntRelay = arrRelayState[EncTest.cntIndex];
+			EncTest.cntRawValue = arrRelayState[EncTest.cntIndex];
 			WriteEncoderParam(EncTest);
 			SEGGER_RTT_printf(0, "-> (Press PS2 Button)\r\n");
 		    HAL_Delay(100);
@@ -122,28 +123,28 @@ void TestRelayTask(void)
 			ConvRelayState(arrRelayState[EncTest.cntIndex]);
 			ShowRelayCount(arrRelayState[EncTest.cntIndex]);
 			ShowButtonTips(0);
-			EncTest.cntRelay = arrRelayState[EncTest.cntIndex];
+			EncTest.cntRawValue = arrRelayState[EncTest.cntIndex];
 			WriteEncoderParam(EncTest);
 			SEGGER_RTT_printf(0, "-> (Press PS3 Button)\r\n");
 		    HAL_Delay(100);
 		}
 		else if(!ReadButton(Button4))
 		{
-			EncTest.cntRelay++;
-			if(EncTest.cntRelay > 0x1FF)
+			EncTest.cntRawValue++;
+			if(EncTest.cntRawValue > 0x1FF)
 			{
-				EncTest.cntRelay = 0x1FF;
+				EncTest.cntRawValue = 0x1FF;
 			}
 			for(int i = 9; i >= 0; i--)
 			{
-				if(EncTest.cntRelay >= arrRelayState[i])
+				if(EncTest.cntRawValue >= arrRelayState[i])
 				{
 					EncTest.cntIndex = i;
 					break;
 				}
 			}
-			ConvRelayState(EncTest.cntRelay);
-			ShowRelayCount(EncTest.cntRelay);
+			ConvRelayState(EncTest.cntRawValue);
+			ShowRelayCount(EncTest.cntRawValue);
 			ShowButtonTips(1);
 			WriteEncoderParam(EncTest);
 			SEGGER_RTT_printf(0, "-> (Press PS4 Button)\r\n");
@@ -151,24 +152,24 @@ void TestRelayTask(void)
 		}
 		else if(!ReadButton(Button5))
 		{
-			if(EncTest.cntRelay > 0 && EncTest.cntRelay <= 0x1FF)
+			if(EncTest.cntRawValue > 0 && EncTest.cntRawValue <= 0x1FF)
 			{
-				EncTest.cntRelay--;
+				EncTest.cntRawValue--;
 			}
 			else
 			{
-				EncTest.cntRelay = 0;
+				EncTest.cntRawValue = 0;
 			}
 			for(int i = 9; i >= 0; i--)
 			{
-				if(EncTest.cntRelay >= arrRelayState[i])
+				if(EncTest.cntRawValue >= arrRelayState[i])
 				{
 					EncTest.cntIndex = i;
 					break;
 				}
 			}
-			ConvRelayState(EncTest.cntRelay);
-			ShowRelayCount(EncTest.cntRelay);
+			ConvRelayState(EncTest.cntRawValue);
+			ShowRelayCount(EncTest.cntRawValue);
 			ShowButtonTips(1);
 			WriteEncoderParam(EncTest);
 			SEGGER_RTT_printf(0, "-> (Press PS5 Button)\r\n");
@@ -189,7 +190,6 @@ void TestRelayTask(void)
 			LedAllOff();
 			RelayAllOff();
 			EncoderInit();
-			SetEncoderShowCount(false);
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(22, 11, "(Return)");
 			SEGGER_RTT_printf(0, "-> (Press PS8 Button)\r\n\r\n");
@@ -203,7 +203,6 @@ void TestRelayTask(void)
 			LedAllOff();
 			RelayAllOff();
 			EncoderInit();
-			SetEncoderShowCount(false);
 			break;
 		}
 	}

@@ -21,6 +21,8 @@ typedef enum
 	Button6,
 	Button7,
 	Button8,
+	ButtonSe1,
+	ButtonSe2,
 }ButtonPin;
 
 typedef enum
@@ -51,6 +53,7 @@ typedef enum
 
 GPIO_PinState ReadButton(ButtonPin btn);
 void WriteLED(LEDPin led, GPIO_PinState sta);
+GPIO_PinState ReadRelay(RelayPin rly);
 void WriteRelay(RelayPin rly, GPIO_PinState sta);
 void LedAllOff(void);
 void RelayAllOff(void);

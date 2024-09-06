@@ -14,8 +14,10 @@
 
 static void ShowCurrentParameter(void)
 {
-	SEGGER_RTT_printf(0, "---> Section of OLED Test Function <---\r\n");
-	SEGGER_RTT_printf(0, "-> Click Specific Key to Activate Function\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
+	SEGGER_RTT_printf(0, "* Current Operation: OLED Test                *\r\n");
+	SEGGER_RTT_printf(0, "* Click Specific Key to Activate Function.    *\r\n");
+	SEGGER_RTT_printf(0, "***********************************************\r\n");
 	SEGGER_RTT_printf(0, "-> 1) Show Font1 Test\r\n");
 	SEGGER_RTT_printf(0, "-> 2) Show Font2 Test\r\n");
 	SEGGER_RTT_printf(0, "-> 3) Show Font3 Test\r\n");

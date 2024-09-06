@@ -119,6 +119,10 @@ void Error_Handler(void);
 #define EC11_EXTI3_Pin GPIO_PIN_3
 #define EC11_EXTI3_GPIO_Port GPIOD
 #define EC11_EXTI3_EXTI_IRQn EXTI2_3_IRQn
+#define Se1_Pin GPIO_PIN_8
+#define Se1_GPIO_Port GPIOB
+#define Se2_Pin GPIO_PIN_9
+#define Se2_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
