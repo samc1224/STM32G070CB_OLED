@@ -241,7 +241,7 @@ static void RawValueSmallChange(bool isCntUp)
 	ConvertRelayState(EncParam.cntRawValue);
 }
 
-// Encoder External Interrupt (Rising Edge): EC22=PD0, EC21=PD1, Ec12=PD2, Ec11=PD3
+// Encoder External Interrupt (Rising Edge): EC22=PD0, EC21=PD1, EC12=PD2, EC11=PD3
 void HAL_GPIO_EXTI_Rising_Callback(uint16_t pinEc)
 {
 	ExCbkParam.isRisingEdge = true;
@@ -252,7 +252,7 @@ void HAL_GPIO_EXTI_Rising_Callback(uint16_t pinEc)
     	case EC22_EXTI0_Pin:
     		if(!HAL_GPIO_ReadPin(EC21_EXTI1_GPIO_Port, EC21_EXTI1_Pin))
     		{
-    			// Encoder: "Forward"
+    			// Right rotation
     			EncParam.isCountUp = true;
     			EncParam.cntEC2++;
     		}
@@ -260,7 +260,7 @@ void HAL_GPIO_EXTI_Rising_Callback(uint16_t pinEc)
     	case EC21_EXTI1_Pin:
     		if(!HAL_GPIO_ReadPin(EC22_EXTI0_GPIO_Port, EC22_EXTI0_Pin))
     		{
-    			// Encoder: "Reverse"
+    			// Left rotation
     			EncParam.isCountUp = false;
     			EncParam.cntEC2--;
     		}
@@ -268,7 +268,7 @@ void HAL_GPIO_EXTI_Rising_Callback(uint16_t pinEc)
     	case EC12_EXTI2_Pin:
     		if(!HAL_GPIO_ReadPin(EC11_EXTI3_GPIO_Port, EC11_EXTI3_Pin))
     		{
-    			// Encoder: "Forward"
+    			// Right rotation
     			EncParam.isCountUp = true;
     			EncParam.cntEC1++;
     		}
@@ -276,7 +276,7 @@ void HAL_GPIO_EXTI_Rising_Callback(uint16_t pinEc)
     	case EC11_EXTI3_Pin:
     		if(!HAL_GPIO_ReadPin(EC12_EXTI2_GPIO_Port, EC12_EXTI2_Pin))
     		{
-    			// Encoder: "Reverse"
+    			// Left rotation
     			EncParam.isCountUp = false;
     			EncParam.cntEC1--;
     		}
@@ -284,7 +284,7 @@ void HAL_GPIO_EXTI_Rising_Callback(uint16_t pinEc)
     }
 }
 
-// Encoder External Interrupt (Falling Edge): EC22=PD0, EC21=PD1, Ec12=PD2, Ec11=PD3
+// Encoder External Interrupt (Falling Edge): EC22=PD0, EC21=PD1, EC12=PD2, EC11=PD3
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t pinEc)
 {
 	ExCbkParam.isFallingEdge = true;
@@ -295,7 +295,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t pinEc)
     	case EC22_EXTI0_Pin:
     		if(HAL_GPIO_ReadPin(EC21_EXTI1_GPIO_Port, EC21_EXTI1_Pin))
     		{
-    			// Encoder: "Forward"
+    			// Right rotation
     			EncParam.isCountUp = true;
     			EncParam.cntEC2++;
     		}
@@ -303,7 +303,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t pinEc)
     	case EC21_EXTI1_Pin:
     		if(HAL_GPIO_ReadPin(EC22_EXTI0_GPIO_Port, EC22_EXTI0_Pin))
     		{
-    			// Encoder: "Reverse"
+    			// Left rotation
     			EncParam.isCountUp = false;
     			EncParam.cntEC2--;
     		}
@@ -311,7 +311,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t pinEc)
     	case EC12_EXTI2_Pin:
     		if(HAL_GPIO_ReadPin(EC11_EXTI3_GPIO_Port, EC11_EXTI3_Pin))
     		{
-    			// Encoder: "Forward"
+    			// Right rotation
     			EncParam.isCountUp = true;
     			EncParam.cntEC1++;
     		}
@@ -319,14 +319,13 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t pinEc)
     	case EC11_EXTI3_Pin:
     		if(HAL_GPIO_ReadPin(EC12_EXTI2_GPIO_Port, EC12_EXTI2_Pin))
     		{
-    			// Encoder: "Reverse"
+    			// Left rotation
     			EncParam.isCountUp = false;
     			EncParam.cntEC1--;
     		}
     		break;
     }
 }
-
 
 void ChangeEncoderBigMultiple()
 {
@@ -342,7 +341,7 @@ void ChangeEncoderBigMultiple()
 	}
 	OLED_Clear(0);
 	sprintf(strCount, "%d", (EncParam.cntMultipleBig + 1) * 1000);
-	OLED_ShowString_11x18W(11, 11, "Set:R*");
+	OLED_ShowString_11x18W(11, 11, "EC1:R*");
 	OLED_ShowString_11x18W(77, 11, strCount);
 }
 
@@ -360,7 +359,7 @@ void ChangeEncoderSmallMultiple()
 	}
 	OLED_Clear(0);
 	sprintf(strCount, "%d", (EncParam.cntMultipleSmall + 1) * 50);
-	OLED_ShowString_11x18W(11, 11, "Set:R*");
+	OLED_ShowString_11x18W(11, 11, "EC2:R*");
 	OLED_ShowString_11x18W(77, 11, strCount);
 }
 

@@ -154,7 +154,7 @@ PrcsRes TestFuncTask(void)
 				}
 				else
 				{
-					ChangeEncoderSmallMultiple();
+					ChangeEncoderBigMultiple();
 					HAL_Delay(500);
 					taskSeq = TestFuncTaskSeq_GetTestSeries;
 				}
@@ -168,15 +168,18 @@ PrcsRes TestFuncTask(void)
 				}
 				else
 				{
-					ChangeEncoderBigMultiple();
+					ChangeEncoderSmallMultiple();
 				    HAL_Delay(500);
 					taskSeq = TestFuncTaskSeq_GetTestSeries;
 				}
 			}
 			else if(!ReadButton(Button3))
 			{
-				testFunc = TestButtonTask;
-				taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
+				if(isMainMenu)
+				{
+					testFunc = TestButtonTask;
+					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
+				}
 			}
 			else if(!ReadButton(Button7))
 			{
