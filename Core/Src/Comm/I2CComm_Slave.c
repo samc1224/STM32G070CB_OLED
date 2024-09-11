@@ -22,40 +22,6 @@ uint8_t aTxBuffer[4];
 /* Buffer used for reception */
 uint8_t aRxBuffer[4];
 
-/*
-void I2C2_Reset()
-{
-    // Open drain output, close the I2C input channel and try to pull the bus high
-    GPIO_InitTypeDef GPIO_InitStruct;
-    GPIO_InitStruct.Pin = GPIO_PIN_10 | GPIO_PIN_11;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10 | GPIO_PIN_11, GPIO_PIN_SET);
-
-    // SCL PB8 pull high
-    for (uint8_t i = 0; i < 10; i++) {
-        if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10) == GPIO_PIN_SET)
-        {
-            break;
-        }
-        // The period and duration of this delay loop should be modified based on how your actual host handles I2C communication errors.
-        HAL_Delay(10);
-    }
-
-    // Return bus control
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    // Reset I2C
-    hi2c2.Instance->CR1 |= I2C_CR1_SWRST;
-    hi2c2.Instance->CR1 &= ~I2C_CR1_SWRST;
-
-    // Reinitialize I2C
-    MX_I2C2_Init();
-}
-*/
-
 void I2C2_Init()
 {
 	aRxBuffer[0]=0x00;
@@ -79,13 +45,9 @@ void I2C2_Init()
 		Error_Handler();
 	}
 
-	//while (HAL_I2C_GetState(&hi2c2) != HAL_I2C_STATE_READY)
+	if (HAL_I2C_Slave_Transmit_DMA(&hi2c2, (uint8_t *)aTxBuffer, TXBUFFERSIZE) != HAL_OK)
 	{
-	}
-
-	//if (HAL_I2C_Slave_Transmit_DMA(&hi2c2, (uint8_t *)aTxBuffer, TXBUFFERSIZE) != HAL_OK)
-	{
-		//Error_Handler();
+		Error_Handler();
 	}
 	*/
 }
@@ -96,13 +58,12 @@ void I2C2_Listen()
 	{
 		Xfer_Complete = 0;
 		HAL_I2C_Init(&hi2c2);
-		/* Put I2C peripheral in listen mode process */
 		if(HAL_I2C_EnableListen_IT(&hi2c2) != HAL_OK)
 		{
 			Error_Handler();
 		}
 		/*
-		if (HAL_I2C_Slave_Transmit_DMA(&hi2c2, (uint8_t *)aTxBuffer, TXBUFFERSIZE) != HAL_OK)
+		if (HAL_I2C_Slave_Receive_DMA(&hi2c2, (uint8_t *)aRxBuffer, RXBUFFERSIZE) != HAL_OK)
 		{
 			Error_Handler();
 		}
@@ -160,20 +121,17 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
   Transfer_Direction = TransferDirection;
   if (Transfer_Direction != 0)
   {
-	/*##- Start the transmission process #####################################*/
-	/* While the I2C in reception process, user can transmit data through "aTxBuffer" buffer */
+	//if (HAL_I2C_Slave_Seq_Transmit_DMA(&hi2c2, (uint8_t *)aTxBuffer, TXBUFFERSIZE, I2C_FIRST_AND_LAST_FRAME) != HAL_OK)
 	if (HAL_I2C_Slave_Seq_Transmit_IT(&hi2c2, (uint8_t *)aTxBuffer, TXBUFFERSIZE, I2C_FIRST_AND_LAST_FRAME) != HAL_OK)
 	{
-		/* Transfer error in transmission process */
 		Error_Handler();
 	}
   }
   else
   {
-	/*##- Put I2C peripheral in reception process ###########################*/
+	//if (HAL_I2C_Slave_Seq_Receive_DMA(&hi2c2, (uint8_t *)aRxBuffer, RXBUFFERSIZE, I2C_FIRST_AND_LAST_FRAME) != HAL_OK)
 	if (HAL_I2C_Slave_Seq_Receive_IT(&hi2c2, (uint8_t *)aRxBuffer, RXBUFFERSIZE, I2C_FIRST_AND_LAST_FRAME) != HAL_OK)
 	{
-		/* Transfer error in reception process */
 		Error_Handler();
 	}
   }
