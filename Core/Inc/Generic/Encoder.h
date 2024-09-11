@@ -21,12 +21,16 @@ typedef struct
 	uint8_t cntIndex;
 	uint16_t cntRawValue;
 	uint16_t cntRawValueTmp;
-	uint8_t cntMultipleBig;
-	uint8_t cntMultipleSmall;
+	uint8_t cntBigMultiple;
+	uint8_t cntSmallMultiple;
 }EncoderParam_t;
 
-void ChangeEncoderBigMultiple();
-void ChangeEncoderSmallMultiple();
+void ShowEncoderCount(void);
+void RawValueBigChange(bool isCntUp);
+void RawValueSmallChange(bool isCntUp);
+
+void ChangeEncoderBigMultiple(uint8_t cntSmall);
+void ChangeEncoderSmallMultiple(uint8_t cntSmall);
 EncoderParam_t ReadEncoderParam(void);
 void WriteEncoderParam(EncoderParam_t param);
 void SetEncoderResistorConversion(bool isConv);

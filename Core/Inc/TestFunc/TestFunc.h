@@ -10,12 +10,7 @@
 
 #include "RTT/SEGGER_RTT.h"
 
-typedef enum
-{
-	PrcsRes_Fail,
-	PrcsRes_Processing,
-	PrcsRes_Success
-}PrcsRes;
+#include "Generic/Generic.h"
 
 /**
  * @brief Test Function Entry

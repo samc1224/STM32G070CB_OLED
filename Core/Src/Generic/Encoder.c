@@ -5,6 +5,8 @@
  *      Author: Sam
  */
 
+#include <string.h>
+
 #include "Generic/Encoder.h"
 #include "Generic/Activation.h"
 #include "Display/OLEDCtrl.h"
@@ -37,11 +39,11 @@ static EncoderParam_t EncParam =
 	.cntIndex = 0,
 	.cntRawValue = 0,
 	.cntRawValueTmp = 0,
-	.cntMultipleBig = 0,
-	.cntMultipleSmall = 0,
+	.cntBigMultiple = 0,
+	.cntSmallMultiple = 0,
 };
 
-static void ShowEncoderCount(void)
+void ShowEncoderCount(void)
 {
 	uint16_t cntRawTmp = EncParam.cntRawValue * 50;
 	char strCount[10];
@@ -142,7 +144,7 @@ static void ConvertLedState(uint8_t rawVal)
 		WriteLED(LED1, 0);
 }
 
-static void RawValueBigChange(bool isCntUp)
+void RawValueBigChange(bool isCntUp)
 {
 	uint16_t arrRelayState[10] = { 0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x1FF };
 
@@ -151,7 +153,7 @@ static void RawValueBigChange(bool isCntUp)
 		if(isCntUp)
 		{
 			// 1 raw value equals 50 ohms, 20*50 = 1000 ohms
-			EncParam.cntRawValue += 20 * (EncParam.cntMultipleBig + 1);
+			EncParam.cntRawValue += 20 * (EncParam.cntBigMultiple + 1);
 			if(EncParam.cntRawValue > 0x1FF)
 			{
 				EncParam.cntRawValue = 0x1FF;
@@ -159,7 +161,7 @@ static void RawValueBigChange(bool isCntUp)
 		}
 		else
 		{
-			EncParam.cntRawValue -= 20 * (EncParam.cntMultipleBig + 1);
+			EncParam.cntRawValue -= 20 * (EncParam.cntBigMultiple + 1);
 			if(EncParam.cntRawValue > 0x1FF)
 			{
 				EncParam.cntRawValue = 0;
@@ -201,7 +203,7 @@ static void RawValueBigChange(bool isCntUp)
 	ConvertRelayState(EncParam.cntRawValue);
 }
 
-static void RawValueSmallChange(bool isCntUp)
+void RawValueSmallChange(bool isCntUp)
 {
 	if(isCntUp)
 	{
@@ -210,9 +212,9 @@ static void RawValueSmallChange(bool isCntUp)
 		if(EncParam.cntRawValueTmp % 2 == 1)
 		{
 			EncParam.cntRawValue++;
-			if(EncParam.cntMultipleSmall > 0)
+			if(EncParam.cntSmallMultiple > 0)
 			{
-				EncParam.cntRawValue += (EncParam.cntMultipleSmall);
+				EncParam.cntRawValue += (EncParam.cntSmallMultiple);
 			}
 			if(EncParam.cntRawValue > 0x1FF) // After addition > 0x1FF
 			{
@@ -227,9 +229,9 @@ static void RawValueSmallChange(bool isCntUp)
 		if(EncParam.cntRawValueTmp % 2 == 1)
 		{
 			EncParam.cntRawValue--;
-			if(EncParam.cntMultipleSmall > 0)
+			if(EncParam.cntSmallMultiple > 0)
 			{
-				EncParam.cntRawValue -= (EncParam.cntMultipleSmall);
+				EncParam.cntRawValue -= (EncParam.cntSmallMultiple);
 			}
 			if(EncParam.cntRawValue > 0x1FF) // After subtraction < 0
 			{
@@ -327,38 +329,38 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t pinEc)
     }
 }
 
-void ChangeEncoderBigMultiple()
+void ChangeEncoderBigMultiple(uint8_t cntBig)
 {
 	char strCount[6];
 
-	if(EncParam.cntMultipleBig == 0)
+	if(cntBig >= 1)
 	{
-		EncParam.cntMultipleBig = 1;
+		EncParam.cntBigMultiple = 1;
 	}
 	else
 	{
-		EncParam.cntMultipleBig = 0;
+		EncParam.cntBigMultiple = 0;
 	}
 	OLED_Clear(0);
-	sprintf(strCount, "%d", (EncParam.cntMultipleBig + 1) * 1000);
+	sprintf(strCount, "%d", (EncParam.cntBigMultiple + 1) * 1000);
 	OLED_ShowString_11x18W(11, 11, "EC1:R*");
 	OLED_ShowString_11x18W(77, 11, strCount);
 }
 
-void ChangeEncoderSmallMultiple()
+void ChangeEncoderSmallMultiple(uint8_t cntSmall)
 {
 	char strCount[6];
 
-	if(EncParam.cntMultipleSmall == 0)
+	if(cntSmall >= 1)
 	{
-		EncParam.cntMultipleSmall = 1;
+		EncParam.cntSmallMultiple = 1;
 	}
 	else
 	{
-		EncParam.cntMultipleSmall = 0;
+		EncParam.cntSmallMultiple = 0;
 	}
 	OLED_Clear(0);
-	sprintf(strCount, "%d", (EncParam.cntMultipleSmall + 1) * 50);
+	sprintf(strCount, "%d", (EncParam.cntSmallMultiple + 1) * 50);
 	OLED_ShowString_11x18W(11, 11, "EC2:R*");
 	OLED_ShowString_11x18W(77, 11, strCount);
 }
@@ -370,10 +372,7 @@ EncoderParam_t ReadEncoderParam(void)
 
 void WriteEncoderParam(EncoderParam_t param)
 {
-	EncParam.cntEC1 = param.cntEC1;
-	EncParam.cntEC2 = param.cntEC2;
-	EncParam.cntIndex = param.cntIndex;
-	EncParam.cntRawValue = param.cntRawValue;
+	memcpy(&EncParam, &param, sizeof(EncoderParam_t));
 }
 
 void SetEncoderResistorConversion(bool isConv)
@@ -397,8 +396,8 @@ void EncoderInit(void)
 	EncParam.cntIndex = 0;
 	EncParam.cntRawValue = 0;
 	EncParam.cntRawValueTmp = 0;
-	EncParam.cntMultipleBig = 0;
-	EncParam.cntMultipleSmall = 0;
+	EncParam.cntBigMultiple = 0;
+	EncParam.cntSmallMultiple = 0;
 }
 
 //In this task, 2 Encoders are used to control the Relay and display the count value on OLED.

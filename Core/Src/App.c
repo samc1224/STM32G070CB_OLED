@@ -5,20 +5,25 @@
  *      Author: Sam
  */
 
+#include "Comm/I2CComm_Slave.h"
+#include "Comm/Postman.h"
+#include "Comm/ServiceFunc.h"
 #include "Display/OLEDCtrl.h"
 #include "Generic/Encoder.h"
+#include "Generic/Generic.h"
 #include "TestFunc/TestFunc.h"
-#include "Comm/I2CComm_Slave.h"
 
 void AppInit(void)
 {
+	PostmanInit();
+	ServFuncInit();
+	GenericInit();
 	OLED_Reset();
-	I2C2_Init();
 }
 
 void AppTask(void)
 {
 	TestFuncTask();
+	PostmanTask();
 	//EncoderTask();
-	I2C2_Listen();
 }

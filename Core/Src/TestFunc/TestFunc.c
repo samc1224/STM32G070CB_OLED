@@ -22,6 +22,8 @@ typedef enum
 /* Entry of Test Function */
 typedef void (* TestFunctionEntry)(void);
 
+static EncoderParam_t EncTestParam;
+
 static void ShowYellowStone()
 {
 	char strYst[] = {"YellowStone"};
@@ -145,6 +147,8 @@ PrcsRes TestFuncTask(void)
 			{
 				EncoderTask();
 			}
+			//
+			EncTestParam = ReadEncoderParam();
 			if(!ReadButton(Button1))
 			{
 				if(isMainMenu)
@@ -154,7 +158,8 @@ PrcsRes TestFuncTask(void)
 				}
 				else
 				{
-					ChangeEncoderBigMultiple();
+					EncTestParam.cntSmallMultiple = !EncTestParam.cntSmallMultiple;
+					ChangeEncoderSmallMultiple(EncTestParam.cntSmallMultiple);
 					HAL_Delay(500);
 					taskSeq = TestFuncTaskSeq_GetTestSeries;
 				}
@@ -168,7 +173,8 @@ PrcsRes TestFuncTask(void)
 				}
 				else
 				{
-					ChangeEncoderSmallMultiple();
+					EncTestParam.cntBigMultiple = !EncTestParam.cntBigMultiple;
+					ChangeEncoderBigMultiple(EncTestParam.cntBigMultiple);
 				    HAL_Delay(500);
 					taskSeq = TestFuncTaskSeq_GetTestSeries;
 				}
@@ -222,13 +228,15 @@ PrcsRes TestFuncTask(void)
 			}
 			else if(!ReadButton(ButtonSe1))
 			{
-				ChangeEncoderSmallMultiple();
+				EncTestParam.cntSmallMultiple = !EncTestParam.cntSmallMultiple;
+				ChangeEncoderSmallMultiple(EncTestParam.cntSmallMultiple);
 			    HAL_Delay(500);
 				taskSeq = TestFuncTaskSeq_GetTestSeries;
 			}
 			else if(!ReadButton(ButtonSe2))
 			{
-				ChangeEncoderBigMultiple();
+				EncTestParam.cntBigMultiple = !EncTestParam.cntBigMultiple;
+				ChangeEncoderBigMultiple(EncTestParam.cntBigMultiple);
 			    HAL_Delay(500);
 				taskSeq = TestFuncTaskSeq_GetTestSeries;
 			}

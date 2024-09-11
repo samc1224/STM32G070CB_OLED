@@ -5,161 +5,324 @@
  *      Author: Sam
  */
 
-#include "main.h"
 #include "Comm/I2CComm_Slave.h"
 
-#define COUNTOF(__BUFFER__)   (sizeof(__BUFFER__) / sizeof(*(__BUFFER__)))
-/* Size of Transmission buffer */
-#define TXBUFFERSIZE                      (COUNTOF(aTxBuffer))
-/* Size of Reception buffer */
-#define RXBUFFERSIZE                      TXBUFFERSIZE
-
-__IO uint32_t     Transfer_Direction = 0;
-__IO uint32_t     Xfer_Complete = 0;
-
-/* Buffer used for transmission */
-uint8_t aTxBuffer[4];
-/* Buffer used for reception */
-uint8_t aRxBuffer[4];
-
-void I2C2_Init()
+typedef enum
 {
-	aRxBuffer[0]=0x00;
-	aRxBuffer[1]=0x00;
-	aRxBuffer[2]=0x00;
-	aRxBuffer[3]=0x00;
-	aTxBuffer[0]=0xAA;
-	aTxBuffer[1]=0xBB;
-	aTxBuffer[2]=0xCC;
-	aTxBuffer[3]=0xDD;
+	I2CCommTaskSeq_Conf,
+	I2CCommTaskSeq_ConfAddrTask,
+	I2CCommTaskSeq_WaitMatchAddress,
+	I2CCommTaskSeq_SlaveWTask,
+	I2CCommTaskSeq_SlaveRTask,
+	I2CCommTaskSeq_ResetTask,
+	I2CCommTaskSeq_ResetWait
+}I2CCommSlaveTaskSeq;
 
-	/* Put I2C peripheral in listen mode process */
-	if(HAL_I2C_EnableListen_IT(&hi2c2) != HAL_OK)
-	{
-		Error_Handler();
-	}
+static I2CCommTransStatus_t I2CCommSlaveStatus =
+{
+	0
+};
 
-	/*
-	if (HAL_I2C_Slave_Receive_DMA(&hi2c2, (uint8_t *)aRxBuffer, RXBUFFERSIZE) != HAL_OK)
-	{
-		Error_Handler();
-	}
+static I2CCommBufferClct_t I2CCommSlaveBufferClct =
+{
+	0
+};
 
-	if (HAL_I2C_Slave_Transmit_DMA(&hi2c2, (uint8_t *)aTxBuffer, TXBUFFERSIZE) != HAL_OK)
-	{
-		Error_Handler();
-	}
-	*/
+static bool IsLastCommRPrcs_Slave = false;
+
+void FlushI2CCommSlaveData(void)
+{
+	I2CCommSlaveBufferClct.BufferCursor = 0;
+	memset((uint8_t *)&I2CCommSlaveBufferClct.Buffer, 0, sizeof(I2CCommSlaveBufferClct.Buffer));
 }
 
-void I2C2_Listen()
+bool SetI2CCommSlaveTxData(const uint8_t *data, uint8_t length)
 {
-	if (Xfer_Complete == 1)
+	if(data == NULL)
+		return false;
+	if(length > BufSize)
+		return false;
+	if(I2CCommSlaveStatus.IsTransferBusy)
+		return false;
+	memset((uint8_t *)&I2CCommSlaveBufferClct.Buffer, 0, BufSize);
+	memcpy((uint8_t *)&I2CCommSlaveBufferClct.Buffer, data, length);
+	return true;
+}
+
+uint8_t GetI2CCommSlaveRxDataLength(void)
+{
+	return I2CCommSlaveBufferClct.BufferCursor;
+}
+
+bool GetI2CCommSlaveRxData(uint8_t *data, uint8_t length)
+{
+	if(data == NULL)
+		return false;
+	if(I2CCommSlaveStatus.IsTransferBusy)
+		return false;
+	memset((uint8_t *)data, 0, BufSize);
+	memcpy((uint8_t *)data, (const uint8_t *)&I2CCommSlaveBufferClct.Buffer, length);
+	return true;
+}
+
+bool IsLastI2CCommSlaveRProcess(void)
+{
+	return IsLastCommRPrcs_Slave;
+}
+
+void ClearLastI2CCommSlaveRProcess(void){
+	IsLastCommRPrcs_Slave = false;
+}
+
+/*
+ * Notice Current I2C Role is Slave.
+ */
+PrcsRes I2CCommSlaveTask(void)
+{
+	const uint32_t NACKTimeOut = 100; /* Represent the Timeout Target of NACK, Step is 1ms */
+	const uint32_t ResetTimeOut = 1; /* Represent the Timeout Target of Reset, Step is 1ms */
+	static uint32_t ResetTimeStamp; /* Represent the Timestamp of Reset Setup */
+
+	static I2CCommSlaveTaskSeq taskSeq = I2CCommTaskSeq_Conf; /* Represent the Task Sequence */
+
+	switch(taskSeq)
 	{
-		Xfer_Complete = 0;
-		HAL_I2C_Init(&hi2c2);
-		if(HAL_I2C_EnableListen_IT(&hi2c2) != HAL_OK)
+		case I2CCommTaskSeq_Conf:
+			/* Clear up the buffer first */
+			I2CCommSlaveBufferClct.BufferCursor = 0;
+			memset((uint8_t *)(&I2CCommSlaveBufferClct.Buffer), 0, sizeof(I2CCommSlaveBufferClct.Buffer) / sizeof(uint8_t));
+
+			ClearI2CCommPrcsStatus(&I2CCommSlaveStatus);
+			ClearI2CCommErrStatus(&I2CCommSlaveStatus);
+
+			taskSeq = I2CCommTaskSeq_ConfAddrTask;
+			break;
+		case I2CCommTaskSeq_ConfAddrTask:
+			/* Enable Address Match IRQ to receive appropriate address */
+			LL_I2C_EnableIT_ADDR(I2CCommSlaveDriver);
+			/* Enable the Error Interrupt */
+			LL_I2C_EnableIT_ERR(I2CCommSlaveDriver);
+
+			I2CCommSlaveStatus.IsTransferBusy = false;
+
+			taskSeq = I2CCommTaskSeq_WaitMatchAddress;
+			break;
+		case I2CCommTaskSeq_WaitMatchAddress:
+			if(I2CCommSlaveStatus.IsAddrMatch)
+			{
+				/* To make sure there is no buffer accessing during Message Transfer*/
+				I2CCommSlaveStatus.IsTransferBusy = true;
+				//
+				if(I2CCommSlaveStatus.IsSlaveWPrcs)
+				{
+					taskSeq = I2CCommTaskSeq_SlaveWTask;
+				}
+				else
+				{
+					taskSeq = I2CCommTaskSeq_SlaveRTask;
+				}
+			}
+			break;
+		case I2CCommTaskSeq_SlaveWTask:
+			/* If Error Occur, jump to I2C Restart Procedure */
+			if(I2CCommSlaveStatus.IsError)
+			{
+				taskSeq = I2CCommTaskSeq_ResetTask;
+				return PrcsRes_Fail;
+			}
+
+			/* If Write Procedure finish, jump to Address Detection.*/
+			if(I2CCommSlaveStatus.IsWriteFinish)
+			{
+				IsLastCommRPrcs_Slave = false;
+				/* In order to make User Insert Pack to Transfer */
+				ClearI2CCommPrcsStatus(&I2CCommSlaveStatus);
+				taskSeq = I2CCommTaskSeq_ConfAddrTask;
+				return PrcsRes_Success;
+			}
+
+			/* If NACK occur, start to detect whether exceed the duration time*/
+			if(I2CCommSlaveStatus.IsWriteNACK)
+			{
+				if(HAL_GetTick() - I2CCommSlaveStatus.WriteNACKTimeStamp > NACKTimeOut)
+				{
+					/* In order to make User Insert Pack to Transfer */
+					ClearI2CCommPrcsStatus(&I2CCommSlaveStatus);
+					FillI2CCommErrStatus(&I2CCommSlaveStatus, I2CCommError_NACKTimeout);
+					taskSeq = I2CCommTaskSeq_ResetTask;
+					return PrcsRes_Fail;
+				}
+			}
+
+			taskSeq = I2CCommTaskSeq_WaitMatchAddress;
+			break;
+		case I2CCommTaskSeq_SlaveRTask:
+			/* If Error Occur, jump to I2C Restart Procedure */
+			if(I2CCommSlaveStatus.IsError)
+			{
+				taskSeq = I2CCommTaskSeq_ResetTask;
+				return PrcsRes_Fail;
+			}
+
+			/* If Read Procedure finish, jump to Address Detection.*/
+			if(I2CCommSlaveStatus.IsReadFinish)
+			{
+				IsLastCommRPrcs_Slave = true;
+				ClearI2CCommPrcsStatus(&I2CCommSlaveStatus);
+				taskSeq = I2CCommTaskSeq_ConfAddrTask;
+				return PrcsRes_Success;
+			}
+
+			taskSeq = I2CCommTaskSeq_WaitMatchAddress;
+			break;
+		case I2CCommTaskSeq_ResetTask:
+			LL_I2C_Disable(I2CCommSlaveDriver);
+			if(LL_I2C_IsEnabled(I2CCommSlaveDriver) == 0)
+			{
+				ResetTimeStamp = HAL_GetTick();
+				taskSeq = I2CCommTaskSeq_ResetWait;
+			}
+			break;
+		case I2CCommTaskSeq_ResetWait:
+			/* Shutdown the I2C for a while to make bus stable*/
+			if(HAL_GetTick() - ResetTimeStamp > ResetTimeOut)
+			{
+				LL_I2C_Enable(I2CCommSlaveDriver);
+				ClearI2CCommPrcsStatus(&I2CCommSlaveStatus);
+				ClearI2CCommErrStatus(&I2CCommSlaveStatus);
+				taskSeq = I2CCommTaskSeq_ConfAddrTask;
+			}
+			break;
+	}
+
+	return PrcsRes_Processing;
+}
+
+uint32_t GetI2CCommSlaveErrorReason(void)
+{
+	return GetI2CCommErrStatus(&I2CCommSlaveStatus);
+}
+
+void I2CCommSlaveEVIRQHandler(void)
+{
+	/* If the calling address matches our address or ReStart Generated*/
+	if(LL_I2C_IsActiveFlag_ADDR(I2CCommSlaveDriver) == 1 && LL_I2C_IsEnabledIT_ADDR(I2CCommSlaveDriver) == 1)
+	{
+		LL_I2C_ClearFlag_ADDR(I2CCommSlaveDriver);
+		I2CCommSlaveStatus.IsAddrMatch = true;
+		I2CCommSlaveStatus.IsWriteNACK = false;
+
+		I2CCommSlaveBufferClct.BufferCursor = 0;
+
+		/* Write Transfer means Master Write, Slave Read*/
+		if(LL_I2C_GetTransferDirection(I2CCommSlaveDriver) == LL_I2C_DIRECTION_WRITE)
 		{
-			Error_Handler();
+			LL_I2C_DisableIT_TX(I2CCommSlaveDriver);
+			LL_I2C_EnableIT_RX(I2CCommSlaveDriver);
+			LL_I2C_DisableIT_NACK(I2CCommSlaveDriver);
+			LL_I2C_EnableIT_STOP(I2CCommSlaveDriver);
+
+			I2CCommSlaveStatus.IsSlaveWPrcs = false;
 		}
-		/*
-		if (HAL_I2C_Slave_Receive_DMA(&hi2c2, (uint8_t *)aRxBuffer, RXBUFFERSIZE) != HAL_OK)
+		/* Read Transfer means Master Read, Slave Write*/
+		else
 		{
-			Error_Handler();
+			LL_I2C_EnableIT_TX(I2CCommSlaveDriver);
+			LL_I2C_DisableIT_RX(I2CCommSlaveDriver);
+			LL_I2C_EnableIT_NACK(I2CCommSlaveDriver);
+			LL_I2C_EnableIT_STOP(I2CCommSlaveDriver);
+
+			I2CCommSlaveStatus.IsSlaveWPrcs = true;
+			LL_I2C_TransmitData8(I2CCommSlaveDriver, I2CCommSlaveBufferClct.Buffer[I2CCommSlaveBufferClct.BufferCursor++]);
 		}
-		*/
+
+		I2CCommSlaveStatus.MatchAddr = (uint16_t)LL_I2C_GetAddressMatchCode(I2CCommSlaveDriver);
+	}
+
+	if(I2CCommSlaveStatus.IsSlaveWPrcs)
+	{
+		/* STOP Procedure */
+		if(LL_I2C_IsActiveFlag_STOP(I2CCommSlaveDriver) == 1 && LL_I2C_IsEnabledIT_STOP(I2CCommSlaveDriver) == 1)
+		{
+			/* Flush out the shadow register */
+			LL_I2C_ClearFlag_TXE(I2CCommSlaveDriver);
+			LL_I2C_ClearFlag_STOP(I2CCommSlaveDriver);
+			//
+			I2CCommSlaveStatus.IsWriteNACK = false;
+			I2CCommSlaveStatus.IsWriteFinish = true;
+			return;
+		}
+
+		/* NACK Procedure */
+		if(LL_I2C_IsActiveFlag_NACK(I2CCommSlaveDriver) == 1 && LL_I2C_IsEnabledIT_NACK(I2CCommSlaveDriver) == 1)
+		{
+			/* Flush out the shadow register */
+			LL_I2C_ClearFlag_TXE(I2CCommSlaveDriver);
+			LL_I2C_ClearFlag_NACK(I2CCommSlaveDriver);
+
+			I2CCommSlaveStatus.IsWriteNACK = true;
+			I2CCommSlaveStatus.WriteNACKTimeStamp = HAL_GetTick();
+			return;
+		}
+
+		if(LL_I2C_IsActiveFlag_TXE(I2CCommSlaveDriver) == 1 && LL_I2C_IsActiveFlag_TXIS(I2CCommSlaveDriver) == 1 && LL_I2C_IsEnabledIT_TX(I2CCommSlaveDriver) == 1)
+		{
+			LL_I2C_TransmitData8(I2CCommSlaveDriver, I2CCommSlaveBufferClct.Buffer[I2CCommSlaveBufferClct.BufferCursor++]);
+		}
+	}
+	else
+	{
+		/* STOP Procedure */
+		if(LL_I2C_IsActiveFlag_STOP(I2CCommSlaveDriver) == 1 && LL_I2C_IsEnabledIT_STOP(I2CCommSlaveDriver) == 1)
+		{
+			LL_I2C_ClearFlag_STOP(I2CCommSlaveDriver);
+
+			I2CCommSlaveStatus.IsReadFinish = true;
+			return;
+		}
+
+		if(LL_I2C_IsActiveFlag_RXNE(I2CCommSlaveDriver) == 1 && LL_I2C_IsEnabledIT_RX(I2CCommSlaveDriver) == 1)
+		{
+			/* Because the speed is fast, so data accessing can not be implemented in regular procedure.*/
+			I2CCommSlaveBufferClct.Buffer[I2CCommSlaveBufferClct.BufferCursor++] = LL_I2C_ReceiveData8(I2CCommSlaveDriver);
+		}
 	}
 }
 
-/**
-  * @brief  Tx Transfer completed callback.
-  *   I2cHandle: I2C handle.
-  * @note   This example shows a simple way to report end of IT Tx transfer, and
-  *         you can add your own implementation.
-  * @retval None
-  */
-void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *I2cHandle)
+void I2CCommSlaveERIRQHandler(void)
 {
 	/*
-	if (HAL_I2C_Slave_Receive_DMA(&hi2c2, (uint8_t *)aRxBuffer, RXBUFFERSIZE) != HAL_OK)
+	 * SMBus function only I2C1 can use, I2C2 is not support. Reference manual (25.3 I2C implementation)
+	 * */
+#if 0
+	if(LL_I2C_IsActiveSMBusFlag_TIMEOUT(I2CCommSlaveDriver) > 0)
 	{
-		Error_Handler();
+		LL_I2C_ClearSMBusFlag_TIMEOUT(I2CCommSlaveDriver);
+		FillI2CCommErrStatus(&I2CCommSlaveStatus, I2CCommError_TimeoutError);
 	}
-	*/
 
-  Xfer_Complete = 1;
-  aTxBuffer[0]++;
-  aTxBuffer[1]++;
-  aTxBuffer[2]++;
-  aTxBuffer[3]++;
-}
-
-/**
-  * @brief  Rx Transfer completed callback.
-  *   I2cHandle: I2C handle
-  * @note   This example shows a simple way to report end of IT Rx transfer, and you can add your own implementation.
-  * @retval None
-  */
-void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *I2cHandle)
-{
-  Xfer_Complete = 1;
-  aRxBuffer[0]=0x00;
-  aRxBuffer[1]=0x00;
-  aRxBuffer[2]=0x00;
-  aRxBuffer[3]=0x00;
-}
-
-/**
-  * @brief  Slave Address Match callback.
-  *   hi2c Pointer to a I2C_HandleTypeDef structure that contains the configuration information for the specified I2C.
-  *   TransferDirection: Master request Transfer Direction (Write/Read), value of @ref I2C_XferOptions_definition
-  *   AddrMatchCode: Address Match Code
-  * @retval None
-  */
-void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
-{
-  Transfer_Direction = TransferDirection;
-  if (Transfer_Direction != 0)
-  {
-	//if (HAL_I2C_Slave_Seq_Transmit_DMA(&hi2c2, (uint8_t *)aTxBuffer, TXBUFFERSIZE, I2C_FIRST_AND_LAST_FRAME) != HAL_OK)
-	if (HAL_I2C_Slave_Seq_Transmit_IT(&hi2c2, (uint8_t *)aTxBuffer, TXBUFFERSIZE, I2C_FIRST_AND_LAST_FRAME) != HAL_OK)
+	if(LL_I2C_IsActiveSMBusFlag_PECERR(I2CCommSlaveDriver) > 0)
 	{
-		Error_Handler();
+		LL_I2C_ClearSMBusFlag_PECERR(I2CCommSlaveDriver);
+		FillI2CCommErrStatus(&I2CCommSlaveStatus, I2CCommError_PECError);
 	}
-  }
-  else
-  {
-	//if (HAL_I2C_Slave_Seq_Receive_DMA(&hi2c2, (uint8_t *)aRxBuffer, RXBUFFERSIZE, I2C_FIRST_AND_LAST_FRAME) != HAL_OK)
-	if (HAL_I2C_Slave_Seq_Receive_IT(&hi2c2, (uint8_t *)aRxBuffer, RXBUFFERSIZE, I2C_FIRST_AND_LAST_FRAME) != HAL_OK)
+#endif
+
+	if(LL_I2C_IsActiveFlag_BERR(I2CCommSlaveDriver) > 0)
 	{
-		Error_Handler();
+		LL_I2C_ClearFlag_BERR(I2CCommSlaveDriver);
+		FillI2CCommErrStatus(&I2CCommSlaveStatus, I2CCommError_BusError);
 	}
-  }
-}
 
-/**
-  * @brief  Listen Complete callback.
-  *   hi2c Pointer to a I2C_HandleTypeDef structure that contains the configuration information for the specified I2C.
-  * @retval None
-  */
-void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-}
+	if(LL_I2C_IsActiveFlag_OVR(I2CCommSlaveDriver) > 0)
+	{
+		LL_I2C_ClearFlag_OVR(I2CCommSlaveDriver);
+		FillI2CCommErrStatus(&I2CCommSlaveStatus, I2CCommError_OverRun);
+	}
 
-/**
-  * @brief  I2C error callbacks.
-  *   I2cHandle: I2C handle
-  * @note   This example shows a simple way to report transfer error, and you can add your own implementation.
-  * @retval None
-  */
-void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *I2cHandle)
-{
-  /** Error_Handler() function is called when error occurs.
-    * 1- When Slave doesn't acknowledge its address, Master restarts communication.
-    * 2- When Master doesn't acknowledge the last data transferred, Slave doesn't care in this example.
-    */
-  if (HAL_I2C_GetError(I2cHandle) != HAL_I2C_ERROR_AF)
-  {
-    Error_Handler();
-  }
+	if(LL_I2C_IsActiveFlag_ARLO(I2CCommSlaveDriver) > 0)
+	{
+		LL_I2C_ClearFlag_ARLO(I2CCommSlaveDriver);
+		FillI2CCommErrStatus(&I2CCommSlaveStatus, I2CCommError_ArbError);
+	}
 }
