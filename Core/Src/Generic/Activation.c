@@ -7,6 +7,23 @@
 
 #include "Generic/Activation.h"
 
+static ActivationParam_t ActParam =
+{
+	.VirtualButton = 0,
+};
+
+uint8_t GetVirtualButton()
+{
+	uint8_t virtualBtn = ActParam.VirtualButton;
+	ActParam.VirtualButton = Button0;
+	return virtualBtn;
+}
+
+void SetVirtualButton(uint8_t btn)
+{
+	ActParam.VirtualButton = btn;
+}
+
 GPIO_PinState ReadButton(ButtonPin btn)
 {
 	if(btn == Button1)

@@ -21,7 +21,7 @@ typedef enum
 	ServiceCmd_SetEc2Knob,
 	ServiceCmd_SetEc1Button,
 	ServiceCmd_SetEc2Button,
-	ServiceCmd_SetPushButtons,
+	ServiceCmd_SetVirtualButton,
 	ServiceCmd_SetResistorValue,
 	ServiceCmd_WriteFWVer = 0x21,
 	ServiceCmd_WriteHWVer,

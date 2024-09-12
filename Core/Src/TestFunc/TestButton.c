@@ -9,6 +9,7 @@
 #include "TestFunc/TestFunc.h"
 #include "Display/OLEDCtrl.h"
 #include "Generic/Activation.h"
+#include "Comm/Postman.h"
 
 static void ShowCurrentParameter(void)
 {
@@ -30,6 +31,7 @@ static void ShowCurrentParameter(void)
 void TestButtonTask(void)
 {
 	int keyOfPrgs;
+	uint8_t virtualBtn;
 
 	char strBtn[] = {"PSx_Button"};
 
@@ -40,6 +42,8 @@ void TestButtonTask(void)
 
 	do
 	{
+		PostmanTask();
+		virtualBtn = GetVirtualButton();
 		keyOfPrgs = SEGGER_RTT_GetKey();
 		if(keyOfPrgs == '0')
 		{
@@ -47,7 +51,7 @@ void TestButtonTask(void)
 			break;
 		}
 
-		if(!ReadButton(Button1))
+		if(!ReadButton(Button1) || virtualBtn == Button1)
 		{
 			LedAllOff();
 			WriteLED(LED3, 1);
@@ -58,7 +62,7 @@ void TestButtonTask(void)
 			SEGGER_RTT_printf(0, "-> (Press PS1 Button)\r\n");
 		    HAL_Delay(300);
 		}
-		if(!ReadButton(Button2))
+		if(!ReadButton(Button2) || virtualBtn == Button2)
 		{
 			LedAllOff();
 			WriteLED(LED4, 1);
@@ -69,7 +73,7 @@ void TestButtonTask(void)
 			SEGGER_RTT_printf(0, "-> (Press PS2 Button)\r\n");
 		    HAL_Delay(300);
 		}
-		if(!ReadButton(Button3))
+		if(!ReadButton(Button3) || virtualBtn == Button3)
 		{
 			LedAllOff();
 			WriteLED(LED5, 1);
@@ -80,7 +84,7 @@ void TestButtonTask(void)
 			SEGGER_RTT_printf(0, "-> (Press PS3 Button)\r\n");
 		    HAL_Delay(300);
 		}
-		if(!ReadButton(Button4))
+		if(!ReadButton(Button4) || virtualBtn == Button4)
 		{
 			LedAllOff();
 			WriteLED(LED2, 1);
@@ -91,7 +95,7 @@ void TestButtonTask(void)
 			SEGGER_RTT_printf(0, "-> (Press PS4 Button)\r\n");
 		    HAL_Delay(300);
 		}
-		if(!ReadButton(Button5))
+		if(!ReadButton(Button5) || virtualBtn == Button5)
 		{
 			LedAllOff();
 			WriteLED(LED1, 1);
@@ -102,27 +106,32 @@ void TestButtonTask(void)
 			SEGGER_RTT_printf(0, "-> (Press PS5 Button)\r\n");
 		    HAL_Delay(300);
 		}
-		if(!ReadButton(Button6))
+		if(!ReadButton(Button6) || virtualBtn == Button6)
 		{
 			LedAllOff();
+			WriteLED(LED3, 1);
+			WriteLED(LED4, 1);
+			WriteLED(LED5, 1);
 			strBtn[2] = '6';
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 0, strBtn);
-			OLED_ShowString_7x10W(33, 22, "(LED Off)");
+			OLED_ShowString_7x10W(18, 22, "(LED 3~5 On)");
 			SEGGER_RTT_printf(0, "-> (Press PS6 Button)\r\n");
 		    HAL_Delay(300);
 		}
-		if(!ReadButton(Button7))
+		if(!ReadButton(Button7) || virtualBtn == Button7)
 		{
 			LedAllOff();
+			WriteLED(LED2, 1);
+			WriteLED(LED1, 1);
 			strBtn[2] = '7';
 			OLED_Clear(0);
 			OLED_ShowString_11x18W(11, 0, strBtn);
-			OLED_ShowString_7x10W(33, 22, "(LED Off)");
+			OLED_ShowString_7x10W(18, 22, "(LED 2~1 On)");
 			SEGGER_RTT_printf(0, "-> (Press PS7 Button)\r\n");
 		    HAL_Delay(300);
 		}
-		if(!ReadButton(Button8))
+		if(!ReadButton(Button8) || virtualBtn == Button8)
 		{
 			LedAllOff();
 			OLED_Clear(0);

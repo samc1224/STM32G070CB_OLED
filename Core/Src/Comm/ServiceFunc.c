@@ -10,6 +10,7 @@
 #include "Comm/Postman.h"
 #include "Generic/Generic.h"
 #include "Generic/Encoder.h"
+#include "Generic/Activation.h"
 
 static AppAttribute_t appAttr;
 static EncoderParam_t encParam;
@@ -47,6 +48,9 @@ static void Post_ServiceFunctionHandler(uint8_t postAddr, uint8_t *msg, uint8_t 
 			break;
 		case ServiceCmd_SetEc2Button:
 			ChangeEncoderBigMultiple(servParam);
+			break;
+		case ServiceCmd_SetVirtualButton:
+			SetVirtualButton(servParam);
 			break;
 		//
 		case ServiceCmd_WriteFWVer:

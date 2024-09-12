@@ -10,6 +10,11 @@
 
 #include "main.h"
 
+typedef struct
+{
+	uint8_t VirtualButton;
+}ActivationParam_t;
+
 typedef enum
 {
 	Button0, // 0: Not used
@@ -50,6 +55,9 @@ typedef enum
 	RelayOpen,
 	RelayShort,
 }RelayPin;
+
+uint8_t GetVirtualButton();
+void SetVirtualButton(uint8_t btn);
 
 GPIO_PinState ReadButton(ButtonPin btn);
 void WriteLED(LEDPin led, GPIO_PinState sta);

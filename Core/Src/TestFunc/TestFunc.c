@@ -43,6 +43,8 @@ PrcsRes TestFuncTask(void)
 	static TestFunctionEntry testFunc = NULL;
 	static bool isMainMenu = false;
 
+	uint8_t virtualBtn;
+
 	switch(taskSeq)
 	{
 		case TestFuncTaskSeq_ShowHintTitle:
@@ -105,18 +107,6 @@ PrcsRes TestFuncTask(void)
 					testFunc = TestButtonTask;
 					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
 					break;
-				/*
-				case '4':
-					LedAllOff();
-					RelayAllOff();
-					EncoderInit();
-					OLED_Clear(0);
-					OLED_ShowString_11x18W(6, 11, "EncoderTest");
-					SEGGER_RTT_printf(0, "(Encoder Testing...)\r\n");
-					SEGGER_RTT_printf(0, "(Forward: Count Up, Reverse: Count Down)\r\n\r\n");
-					taskSeq = TestFuncTaskSeq_GetTestSeries;
-					break;
-				*/
 				case '4':
 					testFunc = TestActivationButtonTask;
 					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
@@ -148,8 +138,9 @@ PrcsRes TestFuncTask(void)
 				EncoderTask();
 			}
 			//
+			virtualBtn = GetVirtualButton();
 			EncTestParam = ReadEncoderParam();
-			if(!ReadButton(Button1))
+			if(!ReadButton(Button1) || virtualBtn == Button1)
 			{
 				if(isMainMenu)
 				{
@@ -164,7 +155,7 @@ PrcsRes TestFuncTask(void)
 					taskSeq = TestFuncTaskSeq_GetTestSeries;
 				}
 			}
-			else if(!ReadButton(Button2))
+			else if(!ReadButton(Button2) || virtualBtn == Button2)
 			{
 				if(isMainMenu)
 				{
@@ -179,7 +170,7 @@ PrcsRes TestFuncTask(void)
 					taskSeq = TestFuncTaskSeq_GetTestSeries;
 				}
 			}
-			else if(!ReadButton(Button3))
+			else if(!ReadButton(Button3) || virtualBtn == Button3)
 			{
 				if(isMainMenu)
 				{
@@ -187,7 +178,7 @@ PrcsRes TestFuncTask(void)
 					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
 				}
 			}
-			else if(!ReadButton(Button7))
+			else if(!ReadButton(Button7) || virtualBtn == Button7)
 			{
 				if(isMainMenu)
 				{
@@ -212,7 +203,7 @@ PrcsRes TestFuncTask(void)
 					taskSeq = TestFuncTaskSeq_GetTestSeries;
 				}
 			}
-			else if(!ReadButton(Button8))
+			else if(!ReadButton(Button8) || virtualBtn == Button8)
 			{
 				isMainMenu = !isMainMenu;
 			    HAL_Delay(300);
@@ -226,14 +217,14 @@ PrcsRes TestFuncTask(void)
 				}
 				taskSeq = TestFuncTaskSeq_ShowHintTitle;
 			}
-			else if(!ReadButton(ButtonSe1))
+			else if(!ReadButton(ButtonSe1) || virtualBtn == ButtonSe1)
 			{
 				EncTestParam.cntSmallMultiple = !EncTestParam.cntSmallMultiple;
 				ChangeEncoderSmallMultiple(EncTestParam.cntSmallMultiple);
 			    HAL_Delay(500);
 				taskSeq = TestFuncTaskSeq_GetTestSeries;
 			}
-			else if(!ReadButton(ButtonSe2))
+			else if(!ReadButton(ButtonSe2) || virtualBtn == ButtonSe2)
 			{
 				EncTestParam.cntBigMultiple = !EncTestParam.cntBigMultiple;
 				ChangeEncoderBigMultiple(EncTestParam.cntBigMultiple);

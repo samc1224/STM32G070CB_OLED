@@ -11,6 +11,7 @@
 #include "Display/OLEDCtrl.h"
 #include "Generic/Encoder.h"
 #include "Generic/Activation.h"
+#include "Comm/Postman.h"
 
 static void ConvRelayState(uint16_t sta)
 {
@@ -68,6 +69,7 @@ void TestRelayTask(void)
 	uint16_t arrRelayState[10] = { 0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x1FF };
 
 	int keyOfPrgs;
+	uint8_t virtualBtn;
 
 	LedAllOff();
 	RelayAllOff();
@@ -83,9 +85,11 @@ void TestRelayTask(void)
 	// In this test task, the Relay can be controlled by 2 Encoders or 8 Buttons.
 	do
 	{
+		PostmanTask();
+		virtualBtn = GetVirtualButton();
 		EncoderTask();
 		EncTest = ReadEncoderParam();
-		if(!ReadButton(Button1))
+		if(!ReadButton(Button1) || virtualBtn == Button1)
 		{
 			isRelayOpenEnable = !isRelayOpenEnable;
 			WriteRelay(RelayOpen, isRelayOpenEnable);
@@ -95,7 +99,7 @@ void TestRelayTask(void)
 			SEGGER_RTT_printf(0, "-> (Press PS1 Button)\r\n");
 		    HAL_Delay(100);
 		}
-		else if(!ReadButton(Button2))
+		else if(!ReadButton(Button2) || virtualBtn == Button2)
 		{
 			EncTest.cntIndex++;
 			if(EncTest.cntIndex > 9)
@@ -110,7 +114,7 @@ void TestRelayTask(void)
 			SEGGER_RTT_printf(0, "-> (Press PS2 Button)\r\n");
 		    HAL_Delay(100);
 		}
-		else if(!ReadButton(Button3))
+		else if(!ReadButton(Button3) || virtualBtn == Button3)
 		{
 			if(EncTest.cntIndex > 0 && EncTest.cntIndex <= 9)
 			{
@@ -128,7 +132,7 @@ void TestRelayTask(void)
 			SEGGER_RTT_printf(0, "-> (Press PS3 Button)\r\n");
 		    HAL_Delay(100);
 		}
-		else if(!ReadButton(Button4))
+		else if(!ReadButton(Button4) || virtualBtn == Button4)
 		{
 			EncTest.cntRawValue++;
 			if(EncTest.cntRawValue > 0x1FF)
@@ -150,7 +154,7 @@ void TestRelayTask(void)
 			SEGGER_RTT_printf(0, "-> (Press PS4 Button)\r\n");
 		    HAL_Delay(100);
 		}
-		else if(!ReadButton(Button5))
+		else if(!ReadButton(Button5) || virtualBtn == Button5)
 		{
 			if(EncTest.cntRawValue > 0 && EncTest.cntRawValue <= 0x1FF)
 			{
@@ -175,7 +179,7 @@ void TestRelayTask(void)
 			SEGGER_RTT_printf(0, "-> (Press PS5 Button)\r\n");
 		    HAL_Delay(100);
 		}
-		else if(!ReadButton(Button7))
+		else if(!ReadButton(Button7) || virtualBtn == Button7)
 		{
 			isRelayShortEnable = !isRelayShortEnable;
 			WriteRelay(RelayShort, isRelayShortEnable);
@@ -185,7 +189,7 @@ void TestRelayTask(void)
 			SEGGER_RTT_printf(0, "-> (Press PS7 Button)\r\n");
 		    HAL_Delay(100);
 		}
-		else if(!ReadButton(Button8))
+		else if(!ReadButton(Button8) || virtualBtn == Button8)
 		{
 			LedAllOff();
 			RelayAllOff();
