@@ -21,6 +21,19 @@ void OLED_Clear(uint8_t color)
 	ssd1306_Fill(color); // 0:Black, 1:White
 }
 
+void OLED_ScrollClear(uint8_t color)
+{
+	for(uint8_t x = 0; x < SSD1306_WIDTH; x++)
+	{
+		ssd1306_Line(x, 0, x, (SSD1306_HEIGHT-1), color);
+		if(x % 10 == 0)
+		{
+			// Update every 10 lines to speed up OLED displays
+			ssd1306_UpdateScreen();
+		}
+	}
+}
+
 // OLED can display the Y-axis up to 32, and will not display if it exceeds 32
 void OLED_ShowString_16x26W(uint8_t x, uint8_t y, char* str)
 {

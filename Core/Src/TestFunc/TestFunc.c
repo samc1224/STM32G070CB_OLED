@@ -24,7 +24,7 @@ typedef void (* TestFunctionEntry)(void);
 
 static EncoderParam_t EncTestParam;
 
-static void ShowYellowStone()
+static void ShowScrollYellowStone()
 {
 	char strYst[] = {"YellowStone"};
 
@@ -35,6 +35,7 @@ static void ShowYellowStone()
 	    HAL_Delay(50);
 	}
     HAL_Delay(300);
+	OLED_ScrollClear(0);
 }
 
 PrcsRes TestFuncTask(void)
@@ -183,7 +184,7 @@ PrcsRes TestFuncTask(void)
 				if(isMainMenu)
 				{
 					isMainMenu = true;
-					ShowYellowStone();
+					ShowScrollYellowStone();
 					SEGGER_RTT_printf(0, "(Return to Test Mode)\r\n");
 					SEGGER_RTT_printf(0, "(OLED Show \"YellowStone\")\r\n\r\n");
 					taskSeq = TestFuncTaskSeq_ShowHintTitle;

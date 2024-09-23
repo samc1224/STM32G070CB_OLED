@@ -34,8 +34,6 @@ static void Post_ServiceFunctionHandler(uint8_t postAddr, uint8_t *msg, uint8_t 
 		case ServiceCmd_EnterServiceMode:
 			break;
 		case ServiceCmd_SetEc1Knob:
-			// EC1 jumps 2 values​​ to count 1
-			RawValueSmallChange(servParam);
 			RawValueSmallChange(servParam);
 			ShowEncoderCount();
 			break;

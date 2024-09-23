@@ -14,9 +14,9 @@ static ActivationParam_t ActParam =
 
 uint8_t GetVirtualButton()
 {
-	uint8_t virtualBtn = ActParam.VirtualButton;
+	uint8_t btn = ActParam.VirtualButton;
 	ActParam.VirtualButton = Button0;
-	return virtualBtn;
+	return btn;
 }
 
 void SetVirtualButton(uint8_t btn)

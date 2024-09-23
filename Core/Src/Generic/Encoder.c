@@ -152,19 +152,27 @@ void RawValueBigChange(bool isCntUp)
 	{
 		if(isCntUp)
 		{
-			// 1 raw value equals 50 ohms, 20*50 = 1000 ohms
-			EncParam.cntRawValue += 20 * (EncParam.cntBigMultiple + 1);
-			if(EncParam.cntRawValue > 0x1FF)
+			// EC2 will change 2 values ​​when rotating one grid, so divide by 2
+			EncParam.cntRawValueTmp++;
+			if(EncParam.cntRawValueTmp % 2 == 1)
 			{
-				EncParam.cntRawValue = 0x1FF;
+				EncParam.cntRawValue += 20 * (EncParam.cntBigMultiple + 1); // 1 raw value = 50 ohms, 20*50 = 1000 ohms
+				if(EncParam.cntRawValue > 0x1FF)
+				{
+					EncParam.cntRawValue = 0x1FF;
+				}
 			}
 		}
 		else
 		{
-			EncParam.cntRawValue -= 20 * (EncParam.cntBigMultiple + 1);
-			if(EncParam.cntRawValue > 0x1FF)
+			EncParam.cntRawValueTmp--;
+			if(EncParam.cntRawValueTmp % 2 == 1)
 			{
-				EncParam.cntRawValue = 0;
+				EncParam.cntRawValue -= 20 * (EncParam.cntBigMultiple + 1);
+				if(EncParam.cntRawValue > 0x1FF)
+				{
+					EncParam.cntRawValue = 0;
+				}
 			}
 		}
 	}
@@ -207,7 +215,7 @@ void RawValueSmallChange(bool isCntUp)
 {
 	if(isCntUp)
 	{
-		// EC1 will jump by 2 values ​​when it rotates one cell, so divide by 2.
+		// EC1 will change 2 values ​​when rotating one grid, so divide by 2
 		EncParam.cntRawValueTmp++;
 		if(EncParam.cntRawValueTmp % 2 == 1)
 		{
@@ -224,7 +232,6 @@ void RawValueSmallChange(bool isCntUp)
 	}
 	else
 	{
-		// EC1 will jump by 2 values ​​when it rotates one cell, so divide by 2.
 		EncParam.cntRawValueTmp--;
 		if(EncParam.cntRawValueTmp % 2 == 1)
 		{
