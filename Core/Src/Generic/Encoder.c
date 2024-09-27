@@ -43,6 +43,8 @@ static EncoderParam_t EncParam =
 	.cntSmallMultiple = 0,
 };
 
+static void ConvertLedStatus(uint8_t rawVal);
+
 void ShowEncoderCount(void)
 {
 	uint16_t cntRawTmp = EncParam.cntRawValue * 50;
@@ -80,14 +82,14 @@ void ShowEncoderCount(void)
 	}
 }
 
-static void ConvertRelayState(uint16_t rawVal)
+void ConvertResistorValueToRelay(uint16_t rawVal)
 {
 	if(EncParam.isResistorConv)
 	{
 		WriteRelay(RelayOpen, 1);
 		if(rawVal > 0x1FF)
 		{
-			rawVal = 0x1FF;
+			rawVal = 0; // Max resistor value (25550)
 		}
 		else
 		{
@@ -120,7 +122,7 @@ static void ConvertRelayState(uint16_t rawVal)
 	}
 }
 
-static void ConvertLedState(uint8_t rawVal)
+static void ConvertLedStatus(uint8_t rawVal)
 {
 	if(rawVal & 0x10)
 		WriteLED(LED3, 1);
@@ -146,13 +148,13 @@ static void ConvertLedState(uint8_t rawVal)
 
 void RawValueBigChange(bool isCntUp)
 {
-	uint16_t arrRelayState[10] = { 0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x1FF };
+	uint16_t arrRelayStatus[10] = { 0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x1FF };
 
 	if(EncParam.isResistorConv)
 	{
 		if(isCntUp)
 		{
-			// EC2 will change 2 values ​​when rotating one grid, so divide by 2
+			// EC2 will change 2 values ​​when rotating one step, so divide by 2
 			EncParam.cntRawValueTmp++;
 			if(EncParam.cntRawValueTmp % 2 == 1)
 			{
@@ -171,7 +173,7 @@ void RawValueBigChange(bool isCntUp)
 				EncParam.cntRawValue -= 20 * (EncParam.cntBigMultiple + 1);
 				if(EncParam.cntRawValue > 0x1FF)
 				{
-					EncParam.cntRawValue = 0;
+					EncParam.cntRawValue = 0x1FF;
 				}
 			}
 		}
@@ -180,7 +182,7 @@ void RawValueBigChange(bool isCntUp)
 	{
 		for(int i = 9; i >= 0; i--)
 		{
-			if(EncParam.cntRawValue >= arrRelayState[i])
+			if(EncParam.cntRawValue >= arrRelayStatus[i])
 			{
 				EncParam.cntIndex = i;
 				break;
@@ -205,17 +207,17 @@ void RawValueBigChange(bool isCntUp)
 				EncParam.cntIndex = 0;
 			}
 		}
-		EncParam.cntRawValue = arrRelayState[EncParam.cntIndex];
+		EncParam.cntRawValue = arrRelayStatus[EncParam.cntIndex];
 	}
-	ConvertLedState(EncParam.cntRawValue);
-	ConvertRelayState(EncParam.cntRawValue);
+	ConvertResistorValueToRelay(EncParam.cntRawValue);
+	ConvertLedStatus(EncParam.cntRawValue);
 }
 
 void RawValueSmallChange(bool isCntUp)
 {
 	if(isCntUp)
 	{
-		// EC1 will change 2 values ​​when rotating one grid, so divide by 2
+		// EC1 will change 2 values ​​when rotating one step, so divide by 2
 		EncParam.cntRawValueTmp++;
 		if(EncParam.cntRawValueTmp % 2 == 1)
 		{
@@ -242,12 +244,48 @@ void RawValueSmallChange(bool isCntUp)
 			}
 			if(EncParam.cntRawValue > 0x1FF) // After subtraction < 0
 			{
-				EncParam.cntRawValue = 0;
+				EncParam.cntRawValue = 0x1FF;
 			}
 		}
 	}
-	ConvertLedState(EncParam.cntRawValue);
-	ConvertRelayState(EncParam.cntRawValue);
+	ConvertResistorValueToRelay(EncParam.cntRawValue);
+	ConvertLedStatus(EncParam.cntRawValue);
+}
+
+void ChangeEncoderBigMultiple(uint8_t cntBig)
+{
+	char strCount[6];
+
+	if(cntBig >= 1)
+	{
+		EncParam.cntBigMultiple = 1;
+	}
+	else
+	{
+		EncParam.cntBigMultiple = 0;
+	}
+	OLED_Clear(0);
+	sprintf(strCount, "%d", (EncParam.cntBigMultiple + 1) * 1000);
+	OLED_ShowString_11x18W(11, 11, "EC1:R*");
+	OLED_ShowString_11x18W(77, 11, strCount);
+}
+
+void ChangeEncoderSmallMultiple(uint8_t cntSmall)
+{
+	char strCount[6];
+
+	if(cntSmall >= 1)
+	{
+		EncParam.cntSmallMultiple = 1;
+	}
+	else
+	{
+		EncParam.cntSmallMultiple = 0;
+	}
+	OLED_Clear(0);
+	sprintf(strCount, "%d", (EncParam.cntSmallMultiple + 1) * 50);
+	OLED_ShowString_11x18W(11, 11, "EC2:R*");
+	OLED_ShowString_11x18W(77, 11, strCount);
 }
 
 // Encoder External Interrupt (Rising Edge): EC22=PD0, EC21=PD1, EC12=PD2, EC11=PD3
@@ -334,42 +372,6 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t pinEc)
     		}
     		break;
     }
-}
-
-void ChangeEncoderBigMultiple(uint8_t cntBig)
-{
-	char strCount[6];
-
-	if(cntBig >= 1)
-	{
-		EncParam.cntBigMultiple = 1;
-	}
-	else
-	{
-		EncParam.cntBigMultiple = 0;
-	}
-	OLED_Clear(0);
-	sprintf(strCount, "%d", (EncParam.cntBigMultiple + 1) * 1000);
-	OLED_ShowString_11x18W(11, 11, "EC1:R*");
-	OLED_ShowString_11x18W(77, 11, strCount);
-}
-
-void ChangeEncoderSmallMultiple(uint8_t cntSmall)
-{
-	char strCount[6];
-
-	if(cntSmall >= 1)
-	{
-		EncParam.cntSmallMultiple = 1;
-	}
-	else
-	{
-		EncParam.cntSmallMultiple = 0;
-	}
-	OLED_Clear(0);
-	sprintf(strCount, "%d", (EncParam.cntSmallMultiple + 1) * 50);
-	OLED_ShowString_11x18W(11, 11, "EC2:R*");
-	OLED_ShowString_11x18W(77, 11, strCount);
 }
 
 EncoderParam_t ReadEncoderParam(void)

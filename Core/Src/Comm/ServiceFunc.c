@@ -50,6 +50,14 @@ static void Post_ServiceFunctionHandler(uint8_t postAddr, uint8_t *msg, uint8_t 
 		case ServiceCmd_SetVirtualButton:
 			SetVirtualButton(servParam);
 			break;
+		case ServiceCmd_SetResistorValue:
+			encParam.cntRawValue = (*(msg+1)) * 256 + (*(msg+2));
+			encParam.cntRawValue /= 50;
+			SetEncoderResistorConversion(true);
+			SetEncoderCountRawValue(encParam.cntRawValue);
+			ConvertResistorValueToRelay(encParam.cntRawValue);
+			ShowEncoderCount();
+			break;
 		//
 		case ServiceCmd_WriteFWVer:
 			if(msgSize < 4)

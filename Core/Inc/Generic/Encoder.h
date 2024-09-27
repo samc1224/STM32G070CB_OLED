@@ -26,11 +26,12 @@ typedef struct
 }EncoderParam_t;
 
 void ShowEncoderCount(void);
+void ConvertResistorValueToRelay(uint16_t rawVal);
 void RawValueBigChange(bool isCntUp);
 void RawValueSmallChange(bool isCntUp);
-
 void ChangeEncoderBigMultiple(uint8_t cntSmall);
 void ChangeEncoderSmallMultiple(uint8_t cntSmall);
+
 EncoderParam_t ReadEncoderParam(void);
 void WriteEncoderParam(EncoderParam_t param);
 void SetEncoderResistorConversion(bool isConv);
