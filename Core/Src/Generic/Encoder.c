@@ -173,7 +173,7 @@ void RawValueBigChange(bool isCntUp)
 				EncParam.cntRawValue -= 20 * (EncParam.cntBigMultiple + 1);
 				if(EncParam.cntRawValue > 0x1FF)
 				{
-					EncParam.cntRawValue = 0x1FF;
+					EncParam.cntRawValue = 0;
 				}
 			}
 		}
@@ -244,7 +244,7 @@ void RawValueSmallChange(bool isCntUp)
 			}
 			if(EncParam.cntRawValue > 0x1FF) // After subtraction < 0
 			{
-				EncParam.cntRawValue = 0x1FF;
+				EncParam.cntRawValue = 0;
 			}
 		}
 	}

@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "App.h"
+#include "Generic/Generic.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -318,7 +319,7 @@ static void MX_I2C2_Init(void)
   I2C_InitStruct.Timing = 0x00303D5B;
   I2C_InitStruct.AnalogFilter = LL_I2C_ANALOGFILTER_ENABLE;
   I2C_InitStruct.DigitalFilter = 0;
-  I2C_InitStruct.OwnAddress1 = 252;
+  I2C_InitStruct.OwnAddress1 = 244;
   I2C_InitStruct.TypeAcknowledge = LL_I2C_ACK;
   I2C_InitStruct.OwnAddrSize = LL_I2C_OWNADDRESS1_7BIT;
   LL_I2C_Init(I2C2, &I2C_InitStruct);

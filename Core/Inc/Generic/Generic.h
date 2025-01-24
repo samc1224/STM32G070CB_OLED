@@ -11,14 +11,22 @@
 #include <stdint.h>
 
 /* FW version shall read only */
-#define FW_VERSION "010"
+#define FW_VERSION "021"
 #define HW_VERSION "100"
 #define SERIAL_NUMBER "Ab99999999"
 
 #define Is(x) (x == 1)
 #define Not(x) (x == 0)
 
+/********************************************************************************************/
+/* Change 'THIS_WHOIS' to make other device recognize who is it of this system */
 #define THIS_WHOIS	(0x07)
+/********************************************************************************************/
+
+/***************************************************************************************************************/
+/* Select which ET channel this board will be used for (0:CH_A, 1:CH_B) */
+#define SELECT_CH	(0)
+/****************************************************************************************************************/
 
 typedef enum
 {

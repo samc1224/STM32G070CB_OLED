@@ -13,8 +13,19 @@
 #include "Generic/Generic.h"
 #include "TestFunc/TestFunc.h"
 
+void I2CAddrInit(void)
+{
+	LL_I2C_DisableOwnAddress1(I2C2);
+	if (SELECT_CH == 0)
+		LL_I2C_SetOwnAddress1(I2C2, 0xF4, LL_I2C_OWNADDRESS1_7BIT); // CH_A: Address = 0x7A
+	else
+		LL_I2C_SetOwnAddress1(I2C2, 0xF6, LL_I2C_OWNADDRESS1_7BIT); // CH_B: Address = 0x7B
+	LL_I2C_EnableOwnAddress1(I2C2);
+}
+
 void AppInit(void)
 {
+	I2CAddrInit();
 	PostmanInit();
 	ServFuncInit();
 	GenericInit();
