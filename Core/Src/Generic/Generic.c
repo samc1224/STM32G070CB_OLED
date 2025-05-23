@@ -7,6 +7,7 @@
 
 #include <string.h>
 
+#include "Comm/I2CComm_Generic.h"
 #include "Generic/Generic.h"
 
 static AppAttribute_t AppAttributeCache =
@@ -20,6 +21,8 @@ static AppAttribute_t AppAttributeCache =
 
 void GenericInit(void)
 {
+	SetI2CCommAddress(I2CCommSlaveDriver, I2C_ADDR);
+
 	memcpy(AppAttributeCache.FWVersion, FW_VERSION, sizeof(FW_VERSION));
 	memcpy(AppAttributeCache.HWVersion, HW_VERSION, sizeof(HW_VERSION));
 	memcpy(AppAttributeCache.SerialNumber, SERIAL_NUMBER, sizeof(SERIAL_NUMBER));
