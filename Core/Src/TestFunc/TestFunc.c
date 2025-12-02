@@ -38,11 +38,77 @@ static void ShowScrollYellowStone()
 	OLED_ScrollClear(0);
 }
 
+static void PressPS1Button()
+{
+	LedAllOff();
+	WriteLED(LED3, 1);
+	SetEncoderCountRawValue(20); // 20 * 50 = 1000
+	ConvertResistorValueToRelay(20);
+	ShowEncoderCount();
+	SEGGER_RTT_printf(0, "(Press PS1 Button)\r\n");
+}
+
+static void PressPS2Button()
+{
+	LedAllOff();
+	WriteLED(LED4, 1);
+	SetEncoderCountRawValue(120); // 120 * 50 = 6000
+	ConvertResistorValueToRelay(120);
+	ShowEncoderCount();
+	SEGGER_RTT_printf(0, "(Press PS2 Button)\r\n");
+}
+
+static void PressPS3Button()
+{
+	LedAllOff();
+	WriteLED(LED5, 1);
+	SetEncoderCountRawValue(180); // 180 * 50 = 9000
+	ConvertResistorValueToRelay(180);
+	ShowEncoderCount();
+	SEGGER_RTT_printf(0, "(Press PS3 Button)\r\n");
+}
+
+static void PressPS4Button()
+{
+	LedAllOff();
+	WriteLED(LED2, 1);
+	SetEncoderCountRawValue(200); // 200 * 50 = 10000
+	ConvertResistorValueToRelay(200);
+	ShowEncoderCount();
+	SEGGER_RTT_printf(0, "(Press PS4 Button)\r\n");
+}
+
+static void PressPS5Button()
+{
+	LedAllOff();
+	WriteLED(LED1, 1);
+	SetEncoderCountRawValue(511); // 511 * 50 = 25550
+	ConvertResistorValueToRelay(511);
+	ShowEncoderCount();
+	SEGGER_RTT_printf(0, "(Press PS5 Button)\r\n");
+}
+
+static void PressPS6Button()
+{
+	EncTestParam.cntSmallMultiple = !EncTestParam.cntSmallMultiple;
+	ChangeEncoderSmallMultiple(EncTestParam.cntSmallMultiple);
+	HAL_Delay(500);
+	SEGGER_RTT_printf(0, "(Press PS6 Button)\r\n");
+}
+
+static void PressPS7Button()
+{
+	EncTestParam.cntBigMultiple = !EncTestParam.cntBigMultiple;
+	ChangeEncoderBigMultiple(EncTestParam.cntBigMultiple);
+    HAL_Delay(500);
+	SEGGER_RTT_printf(0, "(Press PS7 Button)\r\n");
+}
+
 PrcsRes TestFuncTask(void)
 {
 	static TestFuncTaskSeq taskSeq = TestFuncTaskSeq_ShowHintTitle;
 	static TestFunctionEntry testFunc = NULL;
-	static bool isMainMenu = false;
+	static bool isMainMenu = false; // true: Test Mode, false: Encoder Mode
 
 	uint8_t virtualBtn;
 
@@ -53,6 +119,7 @@ PrcsRes TestFuncTask(void)
 			{
 				SEGGER_RTT_printf(0, "***********************************************\r\n");
 				SEGGER_RTT_printf(0, "* Current Operation: Test Mode                *\r\n");
+				SEGGER_RTT_printf(0, "* I2C Address Setting: 0x%X                   *\r\n", I2C_ADDR);
 				SEGGER_RTT_printf(0, "* Click Specific Key to launch Test Function. *\r\n");
 				SEGGER_RTT_printf(0, "***********************************************\r\n");
 				SEGGER_RTT_printf(0, "-> Click '1' > Relay Function Test\r\n");
@@ -75,14 +142,21 @@ PrcsRes TestFuncTask(void)
 			{
 				SEGGER_RTT_printf(0, "***********************************************\r\n");
 				SEGGER_RTT_printf(0, "* Current Operation: Encoder Mode             *\r\n");
+				SEGGER_RTT_printf(0, "* I2C Address Setting: 0x%X                   *\r\n", I2C_ADDR);
 				SEGGER_RTT_printf(0, "* Click Specific Key to Activate Function.    *\r\n");
 				SEGGER_RTT_printf(0, "***********************************************\r\n");
-				SEGGER_RTT_printf(0, "-> Click '1' > Set Encoder Small Multiple (50/100 ohm)\r\n");
-				SEGGER_RTT_printf(0, "-> Click '2' > Set Encoder Big Multiple (1k/2k ohm)\r\n");
+				SEGGER_RTT_printf(0, "-> Click '1' > Set Resistance to 1K Ohm\r\n");
+				SEGGER_RTT_printf(0, "-> Click '2' > Set Resistance to 6K Ohm\r\n");
+				SEGGER_RTT_printf(0, "-> Click '3' > Set Resistance to 9K Ohm\r\n");
+				SEGGER_RTT_printf(0, "-> Click '4' > Set Resistance to 10K Ohm\r\n");
+				SEGGER_RTT_printf(0, "-> Click '5' > Set Resistance to 25.5K Ohm\r\n");
+				SEGGER_RTT_printf(0, "-> Click '6' > Set Encoder Small Scale (50/100 Ohm)\r\n");
+				SEGGER_RTT_printf(0, "-> Click '7' > Set Encoder Large Scale (1K/2K Ohm)\r\n");
 				SEGGER_RTT_printf(0, "-> Click '0' > Switch to Test Mode\r\n\r\n");
 				SEGGER_RTT_printf(0, "-> (Encoders are available to control Relays)\r\n");
 				OLED_Clear(0);
-				OLED_ShowString_11x18W(0, 11, "Encoder Act");
+				OLED_ShowString_11x18W(0, 0, "Encoder Act");
+				OLED_ShowString_7x10W(2, 22, "1K, 6K, 9K, 10K...)");
 				//
 				LedAllOff();
 				RelayAllOff();
@@ -94,46 +168,6 @@ PrcsRes TestFuncTask(void)
 			taskSeq = TestFuncTaskSeq_GetTestSeries;
 			break;
 		case TestFuncTaskSeq_GetTestSeries:
-			switch(SEGGER_RTT_GetKey())
-			{
-				case '1':
-					testFunc = TestRelayTask;
-					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
-					break;
-				case '2':
-					testFunc = TestOledTask;
-					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
-					break;
-				case '3':
-					testFunc = TestButtonTask;
-					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
-					break;
-				case '4':
-					testFunc = TestActivationButtonTask;
-					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
-					break;
-				case '5':
-					testFunc = TestActivationLedTask;
-					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
-					break;
-				case '6':
-					testFunc = TestActivationRelayTask;
-					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
-					break;
-				case '0':
-					isMainMenu = !isMainMenu;
-					if(isMainMenu)
-					{
-						SEGGER_RTT_printf(0, "(Switch to Test Mode)\r\n\r\n");
-					}
-					else
-					{
-						SEGGER_RTT_printf(0, "(Switch to Encoder Act)\r\n\r\n");
-					}
-					taskSeq = TestFuncTaskSeq_ShowHintTitle;
-					break;
-			}
-
 			if(!isMainMenu)
 			{
 				EncoderTask();
@@ -143,78 +177,86 @@ PrcsRes TestFuncTask(void)
 			EncTestParam = ReadEncoderParam();
 			if(!ReadButton(Button1) || virtualBtn == Button1)
 			{
-				if(isMainMenu)
+				if(isMainMenu) // Test Mode
 				{
 					testFunc = TestRelayTask;
 					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
 				}
-				else
+				else // Encoder Mode
 				{
-					EncTestParam.cntSmallMultiple = !EncTestParam.cntSmallMultiple;
-					ChangeEncoderSmallMultiple(EncTestParam.cntSmallMultiple);
-					HAL_Delay(500);
-					taskSeq = TestFuncTaskSeq_GetTestSeries;
+					PressPS1Button();
 				}
 			}
 			else if(!ReadButton(Button2) || virtualBtn == Button2)
 			{
-				if(isMainMenu)
+				if(isMainMenu) // Test Mode
 				{
 					testFunc = TestOledTask;
 					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
 				}
-				else
+				else // Encoder Mode
 				{
-					EncTestParam.cntBigMultiple = !EncTestParam.cntBigMultiple;
-					ChangeEncoderBigMultiple(EncTestParam.cntBigMultiple);
-				    HAL_Delay(500);
-					taskSeq = TestFuncTaskSeq_GetTestSeries;
+					PressPS2Button();
 				}
 			}
 			else if(!ReadButton(Button3) || virtualBtn == Button3)
 			{
-				if(isMainMenu)
+				if(isMainMenu) // Test Mode
 				{
 					testFunc = TestButtonTask;
 					taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
 				}
+				else // Encoder Mode
+				{
+					PressPS3Button();
+				}
+			}
+			else if(!ReadButton(Button4) || virtualBtn == Button4)
+			{
+				if(!isMainMenu) // Encoder Mode
+				{
+					PressPS4Button();
+				}
+			}
+			else if(!ReadButton(Button5) || virtualBtn == Button5)
+			{
+				if(!isMainMenu) // Encoder Mode
+				{
+					PressPS5Button();
+				}
+			}
+			else if(!ReadButton(Button6) || virtualBtn == Button6)
+			{
+				if(!isMainMenu) // Encoder Mode
+				{
+					PressPS6Button();
+				}
 			}
 			else if(!ReadButton(Button7) || virtualBtn == Button7)
 			{
-				if(isMainMenu)
+				if(isMainMenu) // Test Mode
 				{
-					isMainMenu = true;
 					ShowScrollYellowStone();
 					SEGGER_RTT_printf(0, "(Return to Test Mode)\r\n");
 					SEGGER_RTT_printf(0, "(OLED Show \"YellowStone\")\r\n\r\n");
 					taskSeq = TestFuncTaskSeq_ShowHintTitle;
 				}
-				else
+				else // Encoder Mode
 				{
-				    HAL_Delay(300);
-				    if(!ReadRelay(RelayShort))
-				    {
-				    	WriteRelay(RelayShort, 1);
-				    }
-				    else
-				    {
-				    	WriteRelay(RelayShort, 0);
-				    }
-					SEGGER_RTT_printf(0, "(Press PS7 Button)\r\n");
-					taskSeq = TestFuncTaskSeq_GetTestSeries;
+					PressPS7Button();
 				}
 			}
 			else if(!ReadButton(Button8) || virtualBtn == Button8)
 			{
 				isMainMenu = !isMainMenu;
 			    HAL_Delay(300);
-				if(isMainMenu)
+				if(isMainMenu) // Test Mode
 				{
 					SEGGER_RTT_printf(0, "(Switch to Test Mode)\r\n\r\n");
 				}
-				else
+				else // Encoder Mode
 				{
-					SEGGER_RTT_printf(0, "(Switch to Encoder Act)\r\n\r\n");
+					SEGGER_RTT_printf(0, "(Switch to Encoder Mode)\r\n\r\n");
 				}
 				taskSeq = TestFuncTaskSeq_ShowHintTitle;
 			}
@@ -231,6 +273,94 @@ PrcsRes TestFuncTask(void)
 				ChangeEncoderBigMultiple(EncTestParam.cntBigMultiple);
 			    HAL_Delay(500);
 				taskSeq = TestFuncTaskSeq_GetTestSeries;
+			}
+			//
+			switch(SEGGER_RTT_GetKey())
+			{
+				case '1':
+					if(isMainMenu)
+					{
+						testFunc = TestRelayTask;
+						taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
+					}
+					else
+					{
+						PressPS1Button();
+					}
+					break;
+				case '2':
+					if(isMainMenu)
+					{
+						testFunc = TestOledTask;
+						taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
+					}
+					else
+					{
+						PressPS2Button();
+					}
+					break;
+				case '3':
+					if(isMainMenu)
+					{
+						testFunc = TestButtonTask;
+						taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
+					}
+					else
+					{
+						PressPS3Button();
+					}
+					break;
+				case '4':
+					if(isMainMenu)
+					{
+						testFunc = TestActivationButtonTask;
+						taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
+					}
+					else
+					{
+						PressPS4Button();
+					}
+					break;
+				case '5':
+					if(isMainMenu)
+					{
+						testFunc = TestActivationLedTask;
+						taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
+					}
+					else
+					{
+						PressPS5Button();
+					}
+					break;
+				case '6':
+					if(isMainMenu)
+					{
+						testFunc = TestActivationRelayTask;
+						taskSeq = TestFuncTaskSeq_ExecuteTestFunc;
+					}
+					else
+					{
+						PressPS6Button();
+					}
+					break;
+				case '7':
+					if(!isMainMenu)
+					{
+						PressPS7Button();
+					}
+					break;
+				case '0':
+					isMainMenu = !isMainMenu;
+					if(isMainMenu)
+					{
+						SEGGER_RTT_printf(0, "(Switch to Test Mode)\r\n\r\n");
+					}
+					else
+					{
+						SEGGER_RTT_printf(0, "(Switch to Encoder Mode)\r\n\r\n");
+					}
+					taskSeq = TestFuncTaskSeq_ShowHintTitle;
+					break;
 			}
 			break;
 		case TestFuncTaskSeq_ExecuteTestFunc:

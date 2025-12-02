@@ -210,7 +210,7 @@ void RawValueBigChange(bool isCntUp)
 		EncParam.cntRawValue = arrRelayStatus[EncParam.cntIndex];
 	}
 	ConvertResistorValueToRelay(EncParam.cntRawValue);
-	ConvertLedStatus(EncParam.cntRawValue);
+	//ConvertLedStatus(EncParam.cntRawValue);
 }
 
 void RawValueSmallChange(bool isCntUp)
@@ -249,7 +249,7 @@ void RawValueSmallChange(bool isCntUp)
 		}
 	}
 	ConvertResistorValueToRelay(EncParam.cntRawValue);
-	ConvertLedStatus(EncParam.cntRawValue);
+	//ConvertLedStatus(EncParam.cntRawValue);
 }
 
 void ChangeEncoderBigMultiple(uint8_t cntBig)

@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 /* FW version shall read only */
-#define FW_VERSION "021"
+#define FW_VERSION "030"
 #define HW_VERSION "100"
 #define SERIAL_NUMBER "Ab99999999"
 
